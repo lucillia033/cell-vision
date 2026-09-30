@@ -1,86 +1,113 @@
 import streamlit as st
 import os
 
-# 세션 상태 관리
-if "preview_target" not in st.session_state:
-    st.session_state["preview_target"] = "핵"
+st.set_page_config(
+    page_title="Cell Explorer - 동물세포 탐구",
+    layout="wide"
+)
 
-ORGANELLES = {
-    "핵": {"icon": "🧠", "desc": "세포의 생명 활동을 조절하는 중심 기관으로, 유전 정보(DNA)를 보관합니다.", "path": "pages/1_핵.py"},
-    "리보솜": {"icon": "⚙️", "desc": "mRNA의 유전 정보를 바탕으로 단백질을 합성하는 공장입니다.", "path": "pages/2_리보솜.py"},
-    "미토콘드리아": {"icon": "⚡", "desc": "세포 호흡을 통해 유기물을 분해하고 ATP(에너지)를 생성합니다.", "path": "pages/3_미토콘드리아.py"},
-    "소포체": {"icon": "📦", "desc": "단백질과 지질을 합성하고 세포 내 이동 통로 역할을 합니다.", "path": "pages/4_소포체.py"},
-    "골지체": {"icon": "📮", "desc": "소포체에서 온 단백질을 가공·분류하여 세포 안팎으로 분비합니다.", "path": "pages/5_골지체.py"},
-    "리소좀": {"icon": "♻️", "desc": "가수분해 효소를 이용해 손상된 소기관이나 노폐물을 분해합니다.", "path": "pages/6_리소좀.py"},
-    "세포막": {"icon": "🛡️", "desc": "세포 외부와의 경계로, 물질의 출입을 선택적으로 조절합니다.", "path": "pages/7_세포막.py"},
-    "세포질": {"icon": "🌊", "desc": "세포 내부를 채우는 액체 환경으로 여러 대사 과정이 일어납니다.", "path": "pages/8_세포질.py"},
-    "세포골격": {"icon": "🏗️", "desc": "세포의 형태를 유지하고 내부 물질의 이동 길을 제공합니다.", "path": "pages/9_세포골격.py"}
-}
+# pages/ 폴더 기준 상위 루트 경로 계산
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# CSS 스타일
-st.markdown("""
-    <style>
-    .badge {
-        display: inline-block;
-        background-color: #0083B0;
-        color: white;
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# 상단 헤더
+st.title("Cell Explorer")
+st.write("동물세포 내부의 구조와 주요 소기관을 탐구해 보세요.")
 
-st.title("🔬 동물세포 한눈에 보기")
-st.write("소기관 버튼을 누르면 하단에 **간단 설명 카드**가 표출되며, **이동 버튼**이나 **좌측 사이드바**를 통해 해당 전용 페이지로 완전히 이동할 수 있습니다.")
-
-col_left, col_right = st.columns([1.2, 1])
-
-# 좌측: 세포 이미지
-with col_left:
-    st.markdown("### 🖼️ 동물세포 전체 구조")
-    img_file = "cell_image.png"
-    if os.path.exists(img_file):
-        st.image(img_file, caption="동물세포의 구조 및 소기관 위치", use_container_width=True)
-    else:
-        st.info("💡 **이미지 등록 안내**\n\n깃허브 메인 위치에 `cell_image.png` 파일로 세포 구조도 이미지를 업로드해 주세요.")
-
-# 우측: 3x3 소기관 버튼
-with col_right:
-    st.markdown("### 🎯 소기관 선택하기")
-    with st.container(border=True):
-        c1, c2, c3 = st.columns(3)
-        
-        with c1:
-            if st.button("🧠 핵", use_container_width=True): st.session_state["preview_target"] = "핵"
-            if st.button("📦 소포체", use_container_width=True): st.session_state["preview_target"] = "소포체"
-            if st.button("⚙️ 리보솜", use_container_width=True): st.session_state["preview_target"] = "리보솜"
-            
-        with c2:
-            if st.button("⚡ 미토콘드리아", use_container_width=True): st.session_state["preview_target"] = "미토콘드리아"
-            if st.button("📮 골지체", use_container_width=True): st.session_state["preview_target"] = "골지체"
-            if st.button("♻️ 리소좀", use_container_width=True): st.session_state["preview_target"] = "리소좀"
-            
-        with c3:
-            if st.button("🛡️ 세포막", use_container_width=True): st.session_state["preview_target"] = "세포막"
-            if st.button("🌊 세포질", use_container_width=True): st.session_state["preview_target"] = "세포질"
-            if st.button("🏗️ 세포골격", use_container_width=True): st.session_state["preview_target"] = "세포골격"
-
-# 하단 요약 카드 및 페이지 전환
 st.markdown("---")
-target = st.session_state["preview_target"]
-info = ORGANELLES[target]
 
-with st.container(border=True):
-    st.markdown('<span class="badge">SELECTED ORGANELLE</span>', unsafe_allow_html=True)
-    st.subheader(f"{info['icon']} {target} 요약")
-    st.info(info["desc"])
-    
-    target_path = info["path"]
-    if os.path.exists(target_path):
-        if st.button(f"🔍 {target} 단독 페이지로 이동하기 ➔", type="primary", use_container_width=True):
-            st.switch_page(target_path)
-    else:
-        st.warning(f"⚠️ `{target}` 상세 파일(`{target_path}`)이 GitHub에 아직 존재하지 않습니다.")
+# -----------------------------------------------------------------------------
+# 1. 메인 화면 전체 세포 구조 대표 이미지 영역
+# -----------------------------------------------------------------------------
+cell_img_path = os.path.join(BASE_DIR, "images", "cell.png")
+
+if os.path.exists(cell_img_path):
+    st.image(cell_img_path, caption="동물세포의 입체 구조 및 소기관 배치도", use_container_width=True)
+else:
+    st.info("images/cell.png 파일(전체 세포 구조도)을 깃허브 images/ 폴더에 추가하면 대표 이미지가 표시됩니다.")
+
+st.markdown("---")
+
+st.info("""
+**동물세포 탐구 안내**  
+아래 탐구하고 싶은 세포소기관의 '상세 탐구하기' 버튼을 누르면, 해당 소기관의 세부 구조와 메커니즘을 상세히 확인하실 수 있습니다.
+""")
+
+st.markdown("---")
+
+# -----------------------------------------------------------------------------
+# 2. 소기관 이동 카드 목록 (3x3 그리드)
+# -----------------------------------------------------------------------------
+organelles = [
+    {
+        "name": "핵 (Nucleus)",
+        "page": "pages/1_핵.py",
+        "desc": "유전 정보(DNA)를 보관하고 전사를 조절하는 세포의 컨트롤 센터입니다.",
+        "tag": "유전 정보 저장 / 전사 조절"
+    },
+    {
+        "name": "리보솜 (Ribosome)",
+        "page": "pages/2_리보솜.py",
+        "desc": "mRNA 유전 코드를 읽어 아미노산을 연결하는 단백질 합성 공장입니다.",
+        "tag": "단백질 번역 / 아미노산 결합"
+    },
+    {
+        "name": "미토콘드리아 (Mitochondria)",
+        "page": "pages/3_미토콘드리아.py",
+        "desc": "세포 호흡과 산화적 인산화를 통해 ATP 에너지를 생성하는 발전소입니다.",
+        "tag": "세포 호흡 / ATP 생성"
+    },
+    {
+        "name": "소포체 (Endoplasmic Reticulum)",
+        "page": "pages/4_소포체.py",
+        "desc": "단백질 접힘 가공과 지질 합성, 세포 내 수송망을 담당합니다.",
+        "tag": "단백질 수선 / 지질 합성"
+    },
+    {
+        "name": "골지체 (Golgi Apparatus)",
+        "page": "pages/5_골지체.py",
+        "desc": "소포체에서 온 물질을 최종 수선하고 목적지 표지를 부착해 분비합니다.",
+        "tag": "단백질 가공 / 최종 분류"
+    },
+    {
+        "name": "리소좀 (Lysosome)",
+        "page": "pages/6_리소좀.py",
+        "desc": "가수분해 효소로 손상된 소기관과 이물질을 분해하는 재활용 센터입니다.",
+        "tag": "세포 내 소화 / 자가포식"
+    },
+    {
+        "name": "세포막 (Cell Membrane)",
+        "page": "pages/7_세포막.py",
+        "desc": "선택적 투과성을 통해 물질 출입을 통제하는 인지질 이중층 장벽입니다.",
+        "tag": "선택적 투과성 / 신호 수용"
+    },
+    {
+        "name": "세포질 (Cytoplasm)",
+        "page": "pages/8_세포질.py",
+        "desc": "소기관이 배치되고 해당작용 등 초기 대사 반응이 일어나는 점성 매질입니다.",
+        "tag": "해당작용 / 매질 반응"
+    },
+    {
+        "name": "세포골격 (Cytoskeleton)",
+        "page": "pages/9_세포골격.py",
+        "desc": "세포 형태를 지지하고 내부 수송 레일 및 운동을 구동하는 단백질 섬유망입니다.",
+        "tag": "형태 유지 / 수송 레일"
+    }
+]
+
+st.subheader("주요 세포소기관 목록")
+
+for row_idx in range(0, 9, 3):
+    cols = st.columns(3, gap="medium")
+    for col_idx in range(3):
+        item_idx = row_idx + col_idx
+        if item_idx < len(organelles):
+            item = organelles[item_idx]
+            with cols[col_idx]:
+                st.markdown(f"### {item['name']}")
+                st.caption(f"핵심 역할: {item['tag']}")
+                st.write(item["desc"])
+                
+                # 버튼 클릭 시 해당 소기관 페이지로 직접 전환
+                if st.button("상세 탐구하기 →", key=f"nav_btn_{item_idx}", use_container_width=True, type="primary"):
+                    st.switch_page(item["page"])
+    st.markdown("---")
