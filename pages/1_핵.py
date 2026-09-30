@@ -1,59 +1,120 @@
 import streamlit as st
 import os
 
-st.set_page_config(page_title="핵 탐구", layout="wide")
+st.set_page_config(page_title="Cell Explorer - 핵", layout="wide")
 
-st.title("핵 (Nucleus)")
-st.caption("진핵세포의 유전 정보 저장, 전사 및 세포 생명 활동 총괄 제어 센터")
-
-st.markdown("---")
-
-# 이미지 로딩 (절대 경로 기반 탐색)
-col_img, col_info = st.columns([1, 1.2])
+# 프로젝트 최상위 루트 경로 계산
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-img_path = os.path.join(BASE_DIR, "images", "nucleus.png")
 
-with col_img:
-    if os.path.exists(img_path):
-        st.image(img_path, caption="핵의 이중막 구조, 핵공 복합체 및 인", use_container_width=True)
-    else:
-        st.warning(f"이미지 파일(`images/nucleus.png`)을 찾을 수 없습니다.")
+# 대화형 세부 설명 상태 저장 초기화
+if "selected_sub_struct" not in st.session_state:
+    st.session_state["selected_sub_struct"] = None
 
-with col_info:
-    st.subheader("개요 및 생물학적 중요성")
-    st.write("""
-    핵은 진핵세포를 원핵세포와 구별 짓는 가장 핵심적인 소기관입니다. 
-    세포의 모든 유전 설계도인 DNA를 보관하며, 전사(Transcription) 과정을 통해 유전 정보를 mRNA로 복제하여 세포 전체의 단백질 합성 및 대사 과정을 총괄 제어합니다.
-    """)
-
-st.markdown("---")
-
-tab1, tab2, tab3 = st.tabs(["핵심 기능 & 메커니즘", "세부 구조 심화", "관련 지식 & 질환"])
-
-with tab1:
-    st.subheader("유전 정보의 발현 및 제어 메커니즘")
-    st.markdown("""
-    - **유전 정보의 보관 및 복제:** DNA 이중 가닥 형태로 유전 정보를 안전하게 유지하며, 세포 분열 전 정확히 복제합니다.
-    - **전사(Transcription) 조절:** RNA 포식효소가 DNA 가닥을 읽어 mRNA를 합성하며, 다양한 전사 인자가 유전자 발현 시기와 양을 조절합니다.
-    - **핵-세포질 물질 수송:** 핵공 복합체(NPC)를 통해 합성된 RNA는 세포질로 내보내고, 단백질(전사 인자, 히스톤 등)은 핵 내부로 선택적 수용합니다.
-    """)
-
-with tab2:
-    st.subheader("핵의 세부 정밀 구조")
-    with st.expander("1. 핵막(Nuclear Envelope) 및 핵공 복합체(NPC)", expanded=True):
-        st.write("내막과 외막의 이중막 구조로 이루어져 있으며, 외막은 소포체 막과 직접 연결되어 있습니다. 핵공 복합체는 수백 개의 단백질로 구성되어 수용성 분자와 고분자 물질의 출입을 가이딩합니다.")
-    with st.expander("2. 인(Nucleolus)"):
-        st.write("막이 없는 고밀도 영역으로, 리보솜 RNA(rRNA)의 전사 및 가공, 그리고 리보솜 대/소단위체의 조립이 집중적으로 일어나는 장소입니다.")
-    with st.expander("3. 염색질(Chromatin)"):
-        st.write("DNA가 히스톤 단백질을 감싼 뉴클레오솜 구조입니다. 유전자 발현이 활발한 진정염색질(Euchromatin)과 고도로 응축되어 억제된 이질염색질(Heterochromatin)로 구분됩니다.")
-
-with tab3:
-    st.subheader("생물학적 중요 지식 및 질환")
-    st.warning("""
-    - **조경증(Progeria):** 핵막 내측의 구조를 지지하는 라민(Lamin A) 단백질 변형으로 인해 핵막 형태가 무너지고 조기 노화가 유발되는 유전 질환입니다.
-    - **무핵 세포:** 포유류의 성숙한 적혈구는 산소 운반 효율을 극대화하기 위해 발달 과정에서 핵을 퇴화시킵니다.
-    """)
-
-st.markdown("---")
-if st.button("메인 화면으로 돌아가기", type="primary", use_container_width=True):
+# 상단 뒤로가기 버튼
+if st.button("← 세포소기관 목록으로"):
     st.switch_page("pages/0_메인.py")
+
+# ==========================================
+# 1. 상단 메인 섹션 (좌: 대표 이미지 / 우: 요약 정보)
+# ==========================================
+col_left, col_right = st.columns([1, 1.1], gap="large")
+
+with col_left:
+    main_img_path = os.path.join(BASE_DIR, "images", "nucleus.png")
+    if os.path.exists(main_img_path):
+        st.image(main_img_path, use_container_width=True)
+    else:
+        st.info("💡 `images/nucleus.png` 메인 대표 이미지를 등록해 주세요.")
+    st.caption("🔍 각 세부 구조를 클릭하면 자세한 설명을 볼 수 있습니다.")
+
+with col_right:
+    st.title("핵 (Nucleus)")
+    st.write("세포의 유전 정보를 저장하고 세포의 활동을 조절하는 핵심 제어 센터")
+    
+    # 3개 요약 카드를 가로로 배치
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown("#### 🎯 주요 기능")
+        st.caption("• 유전 정보 저장 및 보호\n• 세포 활동 조절\n• 단백질 합성 조절")
+    with c2:
+        st.markdown("#### 📍 위치")
+        st.caption("• 세포질 중앙부\n(진핵세포에서만 존재)")
+    with c3:
+        st.markdown("#### 🧩 주요 구성 요소")
+        st.caption("• 핵막\n• 핵공\n• 염색질\n• 인")
+
+    st.markdown("---")
+    
+    # 왜 중요할까요? 강조 상자
+    st.info("""
+    **💡 핵은 왜 중요할까요?**  
+    핵은 세포의 설계도인 DNA를 보관하고, 세포가 언제 어떤 일을 할지 지시하는 역할을 합니다. 
+    단순히 정보를 저장하는 것뿐만 아니라 세포의 성장, 분열, 대사 등 모든 활동을 조절하는 **'컨트롤 센터'**와 같습니다.
+    """)
+
+st.markdown("---")
+
+# ==========================================
+# 2. 하단 구성 요소 카드리스트 (4열 그리드)
+# ==========================================
+st.subheader("⚙️ 핵의 주요 구성 요소")
+st.write("핵은 여러 구조가 유기적으로 작용하여 유전 정보를 관리합니다.")
+
+# 4개 카드 데이터를 리스트로 구성
+sub_structures = [
+    {
+        "key": "nuclear_envelope",
+        "title": "핵막 (Nuclear envelope)",
+        "img": "nuclear_envelope.png",
+        "desc": "핵을 둘러싸고 있는 이중막 구조로, 세포질과 핵을 구분합니다.",
+        "detail": "내막과 외막의 2중막 구조이며, 외막은 소포체막과 연속적으로 이어져 있습니다."
+    },
+    {
+        "key": "nuclear_pore",
+        "title": "핵공 (Nuclear pore)",
+        "img": "nuclear_pore.png",
+        "desc": "핵막에 있는 구멍으로, 단백질, RNA 등 필요한 물질이 이동하는 통로입니다.",
+        "detail": "핵공 복합체(NPC)가 수백 개의 단백질로 구성되어 물질의 선택적 수송을 엄격히 통제합니다."
+    },
+    {
+        "key": "chromatin",
+        "title": "염색질 (Chromatin)",
+        "img": "chromatin.png",
+        "desc": "DNA와 단백질이 결합한 구조로, 유전 정보를 저장합니다.",
+        "detail": "세포 분열 시 고도로 응축되어 염색체가 되며, 유전자 발현 양상을 조절합니다."
+    },
+    {
+        "key": "nucleolus",
+        "title": "인 (Nucleolus)",
+        "img": "nucleolus.png",
+        "desc": "리보솜의 조립이 이루어지는 곳으로, 리보솜 RNA를 생성합니다.",
+        "detail": "막이 없는 고농도 영역으로, rRNA의 전사 및 리보솜 소단위체 조립이 집중적으로 수행됩니다."
+    }
+]
+
+# 4개 열 생성
+cols = st.columns(4, gap="medium")
+
+for idx, item in enumerate(sub_structures):
+    with cols[idx]:
+        # 세부 이미지 로딩
+        sub_img_path = os.path.join(BASE_DIR, "images", item["img"])
+        if os.path.exists(sub_img_path):
+            st.image(sub_img_path, use_container_width=True)
+        else:
+            st.info(f"💡 `images/{item['img']}`")
+            
+        st.markdown(f"**{item['title']}**")
+        st.caption(item["desc"])
+        
+        # 자세히 보기 버튼 클릭 시 세부 설명 토글
+        if st.button("자세히 보기 →", key=item["key"], use_container_width=True):
+            if st.session_state["selected_sub_struct"] == item["key"]:
+                st.session_state["selected_sub_struct"] = None
+            else:
+                st.session_state["selected_sub_struct"] = item["key"]
+
+# 선택된 세부 구조 심화 안내 상자 표출
+if st.session_state["selected_sub_struct"]:
+    selected_item = next(i for i in sub_structures if i["key"] == st.session_state["selected_sub_struct"])
+    st.success(f"📌 **{selected_item['title']} 상세 정보:** {selected_item['detail']}")
