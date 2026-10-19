@@ -21,25 +21,23 @@ if cell_img_path.is_file():
     st.image(
         str(cell_img_path),
         caption="동물세포의 전체 구조와 주요 세포소기관",
-        use_container_width=True
+        width=500
     )
 else:
     st.warning("전체 세포 구조 이미지를 찾을 수 없습니다.")
 
-    # 문제 확인용 정보
-    st.write("앱 실행 위치:", ROOT_DIR)
-    st.write("이미지 폴더:", IMAGE_DIR)
-    st.write("이미지 폴더 존재 여부:", IMAGE_DIR.is_dir())
-    st.write("찾는 파일:", cell_img_path)
-    st.write("파일 존재 여부:", cell_img_path.is_file())
+    st.caption(f"이미지 폴더: {IMAGE_DIR}")
+    st.caption(f"찾는 파일: {cell_img_path}")
 
+    # 이미지 파일 경로 확인
     if IMAGE_DIR.is_dir():
         image_files = [
             file.name for file in IMAGE_DIR.iterdir()
             if file.is_file()
         ]
-
         st.write("images 폴더 안의 파일 목록:", image_files)
+    else:
+        st.write("images 폴더가 존재하지 않습니다.")
 
 st.markdown("---")
 
