@@ -1,27 +1,21 @@
 import streamlit as st
-import os
+from pathlib import Path
 
-st.set_page_config(
-    page_title="Cell Explorer - 동물세포 탐구",
-    layout="wide"
-)
+st.set_page_config(page_title="Cell Explorer - 동물세포 탐구", layout="wide")
 
-# pages/ 폴더 기준 상위 루트 경로 계산
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 프로젝트 최상위 루트 경로 계산
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
-# 상단 헤더
 st.title("Cell Explorer")
 st.write("동물세포 내부의 구조와 주요 소기관을 탐구해 보세요.")
 
 st.markdown("---")
 
-# -----------------------------------------------------------------------------
-# 1. 메인 화면 전체 세포 구조 대표 이미지 영역
-# -----------------------------------------------------------------------------
-cell_img_path = os.path.join(BASE_DIR, "images", "cell.png")
+# 메인 화면 전체 세포 구조 대표 이미지
+cell_img_path = ROOT_DIR / "images" / "cell.png"
 
-if os.path.exists(cell_img_path):
-    st.image(cell_img_path, caption="동물세포의 입체 구조 및 소기관 배치도", use_container_width=True)
+if cell_img_path.exists():
+    st.image(str(cell_img_path), caption="동물세포의 입체 구조 및 소기관 배치도", use_container_width=True)
 else:
     st.info("images/cell.png 파일(전체 세포 구조도)을 깃허브 images/ 폴더에 추가하면 대표 이미지가 표시됩니다.")
 
@@ -34,9 +28,6 @@ st.info("""
 
 st.markdown("---")
 
-# -----------------------------------------------------------------------------
-# 2. 소기관 이동 카드 목록 (3x3 그리드)
-# -----------------------------------------------------------------------------
 organelles = [
     {
         "name": "핵 (Nucleus)",
@@ -107,7 +98,6 @@ for row_idx in range(0, 9, 3):
                 st.caption(f"핵심 역할: {item['tag']}")
                 st.write(item["desc"])
                 
-                # 버튼 클릭 시 해당 소기관 페이지로 직접 전환
                 if st.button("상세 탐구하기 →", key=f"nav_btn_{item_idx}", use_container_width=True, type="primary"):
                     st.switch_page(item["page"])
     st.markdown("---")
