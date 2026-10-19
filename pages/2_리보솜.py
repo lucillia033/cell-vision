@@ -1,9 +1,9 @@
 import streamlit as st
-import os
+from pathlib import Path
 
 st.set_page_config(page_title="Cell Explorer - 리보솜", layout="wide")
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 if "selected_sub_struct_ribo" not in st.session_state:
     st.session_state["selected_sub_struct_ribo"] = None
@@ -14,16 +14,16 @@ if st.button("← 세포소기관 목록으로"):
 col_left, col_right = st.columns([1, 1.1], gap="large")
 
 with col_left:
-    main_img_path = os.path.join(BASE_DIR, "images", "ribosome.png")
-    if os.path.exists(main_img_path):
-        st.image(main_img_path, use_container_width=True)
+    main_img_path = ROOT_DIR / "images" / "ribosome.png"
+    if main_img_path.exists():
+        st.image(str(main_img_path), use_container_width=True)
     else:
         st.info("images/ribosome.png 대표 이미지를 등록해 주세요.")
     st.caption("각 세부 구조를 클릭하면 자세한 설명을 볼 수 있습니다.")
 
 with col_right:
     st.title("리보솜 (Ribosome)")
-    st.write("mRNA 유전 정보를 해독하여 아미노산을 연결하는 단백질 제조 공장")
+    st.write("mRNA 유전 코드를 읽어 아미노산을 연결하는 단백질 제조 공장")
     
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -70,9 +70,9 @@ cols = st.columns(2, gap="medium")
 
 for idx, item in enumerate(sub_structures):
     with cols[idx]:
-        sub_img_path = os.path.join(BASE_DIR, "images", item["img"])
-        if os.path.exists(sub_img_path):
-            st.image(sub_img_path, use_container_width=True)
+        sub_img_path = ROOT_DIR / "images" / item["img"]
+        if sub_img_path.exists():
+            st.image(str(sub_img_path), use_container_width=True)
         else:
             st.info(f"images/{item['img']}")
             
