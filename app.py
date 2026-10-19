@@ -16,12 +16,12 @@ st.write("동물세포 내부의 구조와 주요 소기관을 탐구해 보세�
 
 st.markdown("---")
 
-# 전체 세포 이미지를 원본 비율 그대로, 적당한 크기로 표시
+# 전체 세포 이미지를 비율 그대로 표시
 if cell_img_path.is_file():
     st.image(
         str(cell_img_path),
         caption="동물세포의 전체 구조와 주요 세포소기관",
-        width=450
+        width="content"
     )
 else:
     st.warning("전체 세포 구조 이미지를 찾을 수 없습니다.")
