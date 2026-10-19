@@ -9,7 +9,7 @@ if "selected_sub_struct" not in st.session_state:
     st.session_state["selected_sub_struct"] = None
 
 if st.button("← 세포소기관 목록으로"):
-    st.switch_page("pages/0_메인.py")
+    st.switch_page("app.py")
 
 col_left, col_right = st.columns([1, 1.1], gap="large")
 
@@ -18,7 +18,7 @@ with col_left:
     if main_img_path.exists():
         st.image(str(main_img_path), use_container_width=True)
     else:
-        st.info("images/nucleus.png 대표 이미지를 등록해 주세요.")
+        st.info("💡 **이미지 준비 중**\n\n`images/nucleus.png` 파일이 업로드되면 대표 다이어그램이 표출됩니다.")
     st.caption("각 세부 구조를 클릭하면 자세한 설명을 볼 수 있습니다.")
 
 with col_right:
@@ -88,7 +88,7 @@ for idx, item in enumerate(sub_structures):
         if sub_img_path.exists():
             st.image(str(sub_img_path), use_container_width=True)
         else:
-            st.info(f"images/{item['img']}")
+            st.info(f"💡 `images/{item['img']}`")
             
         st.markdown(f"**{item['title']}**")
         st.caption(item["desc"])
