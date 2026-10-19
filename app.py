@@ -7,7 +7,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# app.py가 위치한 루트 디렉터리
+# app.py가 위치한 최상위 폴더
 ROOT_DIR = Path(__file__).resolve().parent
 
 st.title("Cell Explorer")
@@ -15,21 +15,31 @@ st.write("동물세포 내부의 구조와 주요 소기관을 탐구해 보세�
 
 st.markdown("---")
 
-# 메인 화면 전체 세포 구조 대표 이미지
+# 전체 세포 구조 이미지 경로
 cell_img_path = ROOT_DIR / "images" / "cell.png"
 
+# 이미지 파일 확인 및 표시
 if cell_img_path.is_file():
-    st.image(
-        str(cell_img_path),
-        caption="동물세포의 전체 구조와 주요 세포소기관",
-        use_container_width=True
-    )
+    try:
+        st.image(
+            str(cell_img_path),
+            caption="동물세포의 전체 구조와 주요 세포소기관",
+            use_container_width=True
+        )
+    except Exception as e:
+        st.warning("이미지 파일을 읽을 수 없습니다.")
+        st.caption(f"오류 내용: {e}")
 else:
-    st.info(
-        "**전체 세포 구조 이미지 준비 중**\n\n"
-        "`images/cell.png` 파일을 업로드하면 "
-        "이 위치에 동물세포 대표 이미지가 표시됩니다."
+    st.warning(
+        "전체 세포 구조 이미지를 찾을 수 없습니다. "
+        "GitHub 저장소의 파일 위치를 확인해 주세요."
     )
+
+    # 이미지 경로 문제를 확인하기 위한 정보
+    st.caption(f"앱 실행 위치: {ROOT_DIR}")
+    st.caption(f"확인한 이미지 경로: {cell_img_path}")
+    st.caption(f"images 폴더 존재 여부: {(ROOT_DIR / 'images').is_dir()}")
+    st.caption("필요한 파일 위치: images/cell.png")
 
 st.markdown("---")
 
