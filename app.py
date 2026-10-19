@@ -1,6 +1,8 @@
 
 import streamlit as st
 from pathlib import Path
+from PIL import Image
+from PIL import ImageOps
 
 st.set_page_config(
     page_title="Cell Explorer - 동물세포 탐구",
@@ -16,25 +18,33 @@ st.write("동물세포 내부의 구조와 주요 소기관을 탐구해 보세�
 
 st.markdown("---")
 
-# 전체 세포 이미지를 비율 그대로 표시
+# 이미지 전체가 보이도록 비율을 유지하며 축소
 if cell_img_path.is_file():
-    st.image(
-        str(cell_img_path),
-        caption="동물세포의 전체 구조와 주요 세포소기관",
-        width="content"
-    )
+    try:
+        with Image.open(cell_img_path) as original:
+            original.load()
+
+            # 원본 비율을 유지하며 지정한 영역 안에 맞춤
+            image = original.convert("RGBA")
+            image.thumbnail((900, 600), Image.Resampling.LANCZOS)
+
+            # 일정한 크기의 배경 안에 이미지 전체를 배치
+            canvas = Image.new("RGBA", (900, 600), "white")
+            x = (900 - image.width) // 2
+            y = (600 - image.height) // 2
+            canvas.alpha_composite(image, (x, y))
+
+            st.image(
+                canvas.convert("RGB"),
+                caption="동물세포의 전체 구조와 주요 세포소기관",
+                width=450
+            )
+
+    except Exception as error:
+        st.error(f"이미지를 표시하지 못했습니다: {error}")
 else:
     st.warning("전체 세포 구조 이미지를 찾을 수 없습니다.")
-    st.caption(f"이미지 경로: {cell_img_path}")
-
-    if IMAGE_DIR.is_dir():
-        image_files = [
-            file.name for file in IMAGE_DIR.iterdir()
-            if file.is_file()
-        ]
-        st.write("images 폴더 안의 파일 목록:", image_files)
-    else:
-        st.write("images 폴더가 존재하지 않습니다.")
+    st.write(f"확인할 경로: {cell_img_path}")
 
 st.markdown("---")
 
