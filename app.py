@@ -16,7 +16,7 @@ st.write("동물세포 내부의 구조와 주요 소기관을 탐구해 보세�
 
 st.markdown("---")
 
-# 전체 동물세포 이미지 표시
+# 전체 세포 이미지를 비율에 맞게 표시
 if cell_img_path.is_file():
     st.image(
         str(cell_img_path),
@@ -25,11 +25,9 @@ if cell_img_path.is_file():
     )
 else:
     st.warning("전체 세포 구조 이미지를 찾을 수 없습니다.")
-
     st.caption(f"이미지 폴더: {IMAGE_DIR}")
     st.caption(f"찾는 파일: {cell_img_path}")
 
-    # 이미지 파일 경로 확인
     if IMAGE_DIR.is_dir():
         image_files = [
             file.name for file in IMAGE_DIR.iterdir()
