@@ -1,9 +1,9 @@
 import streamlit as st
-import os
+from pathlib import Path
 
 st.set_page_config(page_title="Cell Explorer - 핵", layout="wide")
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 if "selected_sub_struct" not in st.session_state:
     st.session_state["selected_sub_struct"] = None
@@ -14,9 +14,9 @@ if st.button("← 세포소기관 목록으로"):
 col_left, col_right = st.columns([1, 1.1], gap="large")
 
 with col_left:
-    main_img_path = os.path.join(BASE_DIR, "images", "nucleus.png")
-    if os.path.exists(main_img_path):
-        st.image(main_img_path, use_container_width=True)
+    main_img_path = ROOT_DIR / "images" / "nucleus.png"
+    if main_img_path.exists():
+        st.image(str(main_img_path), use_container_width=True)
     else:
         st.info("images/nucleus.png 대표 이미지를 등록해 주세요.")
     st.caption("각 세부 구조를 클릭하면 자세한 설명을 볼 수 있습니다.")
@@ -84,9 +84,9 @@ cols = st.columns(4, gap="medium")
 
 for idx, item in enumerate(sub_structures):
     with cols[idx]:
-        sub_img_path = os.path.join(BASE_DIR, "images", item["img"])
-        if os.path.exists(sub_img_path):
-            st.image(sub_img_path, use_container_width=True)
+        sub_img_path = ROOT_DIR / "images" / item["img"]
+        if sub_img_path.exists():
+            st.image(str(sub_img_path), use_container_width=True)
         else:
             st.info(f"images/{item['img']}")
             
