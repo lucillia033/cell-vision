@@ -2,6 +2,8 @@
 import streamlit as st
 from pathlib import Path
 from PIL import Image
+from io import BytesIO
+import base64
 
 st.set_page_config(
     page_title="Cell Vision",
@@ -15,7 +17,6 @@ IMG = ROOT / "images"
 # ---------- 전체 디자인 ----------
 st.markdown("""
 <style>
-/* 전체 배경 */
 .stApp,
 [data-testid="stAppViewContainer"],
 [data-testid="stMain"] {
@@ -28,12 +29,10 @@ st.markdown("""
     color: #F4F7FF !important;
 }
 
-/* 상단 메뉴 */
 [data-testid="stHeader"] {
     background: #050A13 !important;
 }
 
-/* 사이드바 */
 [data-testid="stSidebar"],
 [data-testid="stSidebar"] > div,
 [data-testid="stSidebarContent"],
@@ -65,7 +64,6 @@ st.markdown("""
     border-left: 3px solid #55BFFF !important;
 }
 
-/* 본문 */
 .block-container {
     max-width: 1250px;
     padding-top: 1.5rem;
@@ -76,7 +74,7 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     color: #F4F7FF;
 }
 
-/* 제목 */
+/* 메인 제목 */
 .cv-title {
     text-align: center;
     font-size: clamp(34px, 4vw, 54px);
@@ -87,24 +85,58 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     text-shadow: 0 0 24px #3B82F655;
 }
 
-/* 소기관 이미지와 이름 */
+/* 소기관 카드 */
 .orbit-card {
     text-align: center;
-    margin: 7px auto 12px auto;
+    margin: 8px auto 20px auto;
 }
 
+/* 클릭 가능한 원형 이미지 */
+.organelle-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 94px;
+    height: 94px;
+    margin: 0 auto;
+    padding: 5px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 2px solid #4FBFFF;
+    background: radial-gradient(circle, #132641, #07101F);
+    box-shadow: 0 0 14px #36AAFF55;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+}
+
+.organelle-link:hover {
+    border-color: #B3E7FF;
+    box-shadow: 0 0 25px #259DFFAA;
+    transform: scale(1.06);
+}
+
+.organelle-link img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+/* 소기관 이름 */
 .orbit-label {
-    color: #F4F8FF !important;
-    font-size: 14px;
+    color: #FFFFFF !important;
+    font-size: 15px;
     font-weight: 600;
     text-align: center;
-    margin-top: 7px;
+    margin-top: 10px;
 }
 
 .orbit-en {
     color: #A9BCD5 !important;
     font-size: 11px;
     text-align: center;
+    margin-top: 3px;
 }
 
 /* 중앙 세포 이미지 */
@@ -124,101 +156,13 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     margin-top: 8px;
 }
 
-/* 모든 소기관 버튼의 기본 상태 */
-.stApp div[data-testid="stButton"] > button,
-.stApp div[data-testid="stButton"] > button:link,
-.stApp div[data-testid="stButton"] > button:visited {
-    background-color: #0B192B !important;
-    background: #0B192B !important;
-    color: #F4F8FF !important;
-    border: 2px solid #4FBFFF !important;
-
-    width: 100px !important;
-    min-width: 100px !important;
-    max-width: 100px !important;
-    height: 100px !important;
-    min-height: 100px !important;
-
-    padding: 8px !important;
-    margin: 0 auto !important;
-    border-radius: 50% !important;
-
-    white-space: normal !important;
-    overflow-wrap: anywhere !important;
-    line-height: 1.25 !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-
-    box-shadow: 0 0 15px #259DFF44 !important;
-    transition: all 0.2s ease !important;
+/* 이미지가 링크일 때 밑줄 제거 */
+a, a:hover, a:visited {
+    text-decoration: none !important;
 }
 
-/* 버튼 안의 글씨 */
-.stApp div[data-testid="stButton"] > button p,
-.stApp div[data-testid="stButton"] > button span,
-.stApp div[data-testid="stButton"] > button div {
-    color: #F4F8FF !important;
-}
-
-/* 마우스를 올렸을 때 */
-.stApp div[data-testid="stButton"] > button:hover {
-    background-color: #193453 !important;
-    background: #193453 !important;
-    color: #FFFFFF !important;
-    border-color: #B3E7FF !important;
-    box-shadow: 0 0 25px #259DFF99 !important;
-}
-
-/* 키보드 포커스 상태 */
-.stApp div[data-testid="stButton"] > button:focus,
-.stApp div[data-testid="stButton"] > button:focus-visible,
-.stApp div[data-testid="stButton"] > button:active {
-    background-color: #142A43 !important;
-    background: #142A43 !important;
-    color: #FFFFFF !important;
-    border-color: #55BFFF !important;
-    box-shadow: 0 0 18px #259DFF66 !important;
-}
-
-/* 입력창 */
-.stTextInput input,
-.stTextArea textarea,
-.stNumberInput input,
-[data-baseweb="input"] > div,
-[data-baseweb="select"] > div {
-    background: #101C2D !important;
-    color: #F4F8FF !important;
-    border-color: #405875 !important;
-}
-
-/* 선택 메뉴 */
-[data-baseweb="popover"],
-[data-baseweb="menu"],
-[role="listbox"],
-[role="option"] {
-    background: #101C2D !important;
-    color: #F4F8FF !important;
-}
-
-[role="option"]:hover {
-    background: #254261 !important;
-}
-
-/* 안내 상자 */
-[data-testid="stAlert"],
-[data-testid="stExpander"] {
-    background: #0D192B !important;
-    color: #F4F8FF !important;
-    border-color: #304865 !important;
-}
-
-/* 구분선과 하단 */
 hr {
     border-color: #263B56 !important;
-}
-
-footer {
-    background: #050A13 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -281,7 +225,7 @@ organelles = {
 }
 
 
-# ---------- 이미지 불러오기 ----------
+# ---------- 이미지 읽기 ----------
 def load_image(image_path):
     if not image_path.is_file():
         return None
@@ -294,26 +238,50 @@ def load_image(image_path):
         return None
 
 
-# ---------- 소기관 표시 ----------
+# ---------- 이미지 인코딩 ----------
+def image_to_base64(image):
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode("ascii")
+
+
+# ---------- 클릭 가능한 소기관 카드 ----------
 def show_organelle(name):
     item = organelles[name]
     image_path = IMG / item["image"]
-
-    st.markdown(
-        '<div class="orbit-card">',
-        unsafe_allow_html=True
-    )
-
     organelle_image = load_image(image_path)
 
+    st.markdown('<div class="orbit-card">', unsafe_allow_html=True)
+
     if organelle_image is not None:
-        st.image(organelle_image, width=78)
-    else:
+        encoded_image = image_to_base64(organelle_image)
+
+        # 이미지를 누르면 해당 소기관의 Streamlit 페이지로 이동
+        # 상대 경로 링크로 페이지를 연결합니다.
+        page_url = "/" + item["page"].replace(".py", "").replace(" ", "%20")
+
         st.markdown(
-            '<div style="height:78px;"></div>',
+            f"""
+            <a class="organelle-link" href="{page_url}" target="_self">
+                <img
+                    src="data:image/png;base64,{encoded_image}"
+                    alt="{name}"
+                >
+            </a>
+            """,
             unsafe_allow_html=True
         )
-        st.caption(f"이미지 확인 필요: {item['image']}")
+    else:
+        st.markdown(
+            f"""
+            <div class="organelle-link">
+                <span style="color:#A9BCD5;font-size:11px;">
+                    이미지 없음
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     st.markdown(
         f'<div class="orbit-label">{name}</div>'
@@ -322,13 +290,6 @@ def show_organelle(name):
     )
 
     st.markdown('</div>', unsafe_allow_html=True)
-
-    if st.button(
-        f"{name} 탐구",
-        key=f"open_{name}",
-        help=f"{name} 상세 페이지로 이동"
-    ):
-        st.switch_page(item["page"])
 
 
 # ---------- 위쪽 소기관 ----------
@@ -364,7 +325,12 @@ with center:
             '<div class="center-cell">',
             unsafe_allow_html=True
         )
-        st.image(cell_image, use_container_width=True)
+
+        st.image(
+            cell_image,
+            use_container_width=True
+        )
+
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(
