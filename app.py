@@ -12,10 +12,10 @@ st.set_page_config(
 ROOT = Path(__file__).resolve().parent
 IMG = ROOT / "images"
 
-
-# ---------- 다크 테마 ----------
+# ---------- 전체 디자인 ----------
 st.markdown("""
 <style>
+/* 전체 배경 */
 .stApp,
 [data-testid="stAppViewContainer"],
 [data-testid="stMain"] {
@@ -28,10 +28,12 @@ st.markdown("""
     color: #F4F7FF !important;
 }
 
+/* 상단 메뉴 */
 [data-testid="stHeader"] {
     background: #050A13 !important;
 }
 
+/* 사이드바 */
 [data-testid="stSidebar"],
 [data-testid="stSidebar"] > div,
 [data-testid="stSidebarContent"],
@@ -49,6 +51,7 @@ st.markdown("""
 
 [data-testid="stSidebarNav"] a {
     background: #0D192B !important;
+    color: #EAF3FF !important;
     border-radius: 8px !important;
     margin: 4px 0 !important;
 }
@@ -62,6 +65,7 @@ st.markdown("""
     border-left: 3px solid #55BFFF !important;
 }
 
+/* 본문 */
 .block-container {
     max-width: 1250px;
     padding-top: 1.5rem;
@@ -72,6 +76,7 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     color: #F4F7FF;
 }
 
+/* 제목 */
 .cv-title {
     text-align: center;
     font-size: clamp(34px, 4vw, 54px);
@@ -82,6 +87,7 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     text-shadow: 0 0 24px #3B82F655;
 }
 
+/* 소기관 이미지와 이름 */
 .orbit-card {
     text-align: center;
     margin: 7px auto 12px auto;
@@ -101,15 +107,12 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     text-align: center;
 }
 
+/* 중앙 세포 이미지 */
 .center-cell {
     border: 1px solid #244D7A;
     border-radius: 18px;
     padding: 8px;
-    background: radial-gradient(
-        circle,
-        #11284688,
-        #050B1500 72%
-    );
+    background: #07101F;
     box-shadow: 0 0 35px #168BFF22;
 }
 
@@ -121,45 +124,101 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     margin-top: 8px;
 }
 
-div[data-testid="stButton"] > button {
+/* 모든 소기관 버튼의 기본 상태 */
+.stApp div[data-testid="stButton"] > button,
+.stApp div[data-testid="stButton"] > button:link,
+.stApp div[data-testid="stButton"] > button:visited {
+    background-color: #0B192B !important;
+    background: #0B192B !important;
+    color: #F4F8FF !important;
+    border: 2px solid #4FBFFF !important;
+
     width: 100px !important;
     min-width: 100px !important;
     max-width: 100px !important;
     height: 100px !important;
     min-height: 100px !important;
+
     padding: 8px !important;
     margin: 0 auto !important;
     border-radius: 50% !important;
-    border: 2px solid #4FBFFF !important;
-    background: #0B192B !important;
-    color: #F4F8FF !important;
+
     white-space: normal !important;
     overflow-wrap: anywhere !important;
     line-height: 1.25 !important;
     font-size: 13px !important;
     font-weight: 600 !important;
+
     box-shadow: 0 0 15px #259DFF44 !important;
     transition: all 0.2s ease !important;
 }
 
-div[data-testid="stButton"] > button p,
-div[data-testid="stButton"] > button span {
+/* 버튼 안의 글씨 */
+.stApp div[data-testid="stButton"] > button p,
+.stApp div[data-testid="stButton"] > button span,
+.stApp div[data-testid="stButton"] > button div {
     color: #F4F8FF !important;
 }
 
-div[data-testid="stButton"] > button:hover {
+/* 마우스를 올렸을 때 */
+.stApp div[data-testid="stButton"] > button:hover {
+    background-color: #193453 !important;
     background: #193453 !important;
+    color: #FFFFFF !important;
     border-color: #B3E7FF !important;
     box-shadow: 0 0 25px #259DFF99 !important;
 }
 
+/* 키보드 포커스 상태 */
+.stApp div[data-testid="stButton"] > button:focus,
+.stApp div[data-testid="stButton"] > button:focus-visible,
+.stApp div[data-testid="stButton"] > button:active {
+    background-color: #142A43 !important;
+    background: #142A43 !important;
+    color: #FFFFFF !important;
+    border-color: #55BFFF !important;
+    box-shadow: 0 0 18px #259DFF66 !important;
+}
+
+/* 입력창 */
+.stTextInput input,
+.stTextArea textarea,
+.stNumberInput input,
+[data-baseweb="input"] > div,
+[data-baseweb="select"] > div {
+    background: #101C2D !important;
+    color: #F4F8FF !important;
+    border-color: #405875 !important;
+}
+
+/* 선택 메뉴 */
+[data-baseweb="popover"],
+[data-baseweb="menu"],
+[role="listbox"],
+[role="option"] {
+    background: #101C2D !important;
+    color: #F4F8FF !important;
+}
+
+[role="option"]:hover {
+    background: #254261 !important;
+}
+
+/* 안내 상자 */
+[data-testid="stAlert"],
+[data-testid="stExpander"] {
+    background: #0D192B !important;
+    color: #F4F8FF !important;
+    border-color: #304865 !important;
+}
+
+/* 구분선과 하단 */
 hr {
     border-color: #263B56 !important;
 }
 
-[data-testid="stAlert"] {
-    background: #0D192B !important;
-    color: #F4F8FF !important;
+footer {
+    background: #050A13 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -224,7 +283,6 @@ organelles = {
 
 # ---------- 이미지 불러오기 ----------
 def load_image(image_path):
-    """이미지 파일을 확인하고 PIL 이미지로 반환합니다."""
     if not image_path.is_file():
         return None
 
@@ -241,16 +299,15 @@ def show_organelle(name):
     item = organelles[name]
     image_path = IMG / item["image"]
 
-    st.markdown('<div class="orbit-card">', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="orbit-card">',
+        unsafe_allow_html=True
+    )
 
     organelle_image = load_image(image_path)
 
     if organelle_image is not None:
-        # 긴 링크나 Base64 문자열을 만들지 않고 이미지 직접 표시
-        st.image(
-            organelle_image,
-            width=78
-        )
+        st.image(organelle_image, width=78)
     else:
         st.markdown(
             '<div style="height:78px;"></div>',
@@ -300,21 +357,14 @@ with left:
     show_organelle("세포막")
 
 with center:
-    cell_path = IMG / "cell.png"
-    cell_image = load_image(cell_path)
+    cell_image = load_image(IMG / "cell.png")
 
     if cell_image is not None:
-        # 중앙 이미지도 직접 표시해 긴 링크가 출력되지 않도록 처리
         st.markdown(
             '<div class="center-cell">',
             unsafe_allow_html=True
         )
-
-        st.image(
-            cell_image,
-            use_container_width=True
-        )
-
+        st.image(cell_image, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(
@@ -324,7 +374,7 @@ with center:
     else:
         st.warning(
             "중앙 세포 이미지를 찾을 수 없습니다. "
-            "GitHub의 images 폴더에 cell.png 파일이 있는지 확인해 주세요."
+            "images 폴더에 cell.png 파일이 있는지 확인해 주세요."
         )
 
 with right:
