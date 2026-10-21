@@ -1,329 +1,401 @@
 
 import streamlit as st
 from pathlib import Path
+from io import BytesIO
+import base64
+import html
 from PIL import Image
 
 st.set_page_config(
-    page_title="Cell Vision",
+    page_title="Cell Explorer",
     page_icon="🔬",
     layout="wide"
 )
 
-ROOT = Path(__file__).resolve().parent
-IMG = ROOT / "images"
+ROOT_DIR = Path(__file__).resolve().parent
+IMAGE_DIR = ROOT_DIR / "images"
 
-# ---------- 디자인 ----------
-st.markdown("""
-<style>
-.stApp,
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"] {
-    background: radial-gradient(
-        ellipse at 50% 40%,
-        #10213a 0%,
-        #070d18 55%,
-        #03060c 100%
-    ) !important;
-    color: #F4F7FF !important;
+# 소기관 정보
+ORGANELLES = [
+    {
+        "key": "nucleus",
+        "name": "핵",
+        "english": "Nucleus",
+        "image": "nucleus.png",
+        "page": "pages/1_핵.py",
+        "position": "top",
+    },
+    {
+        "key": "ribosome",
+        "name": "리보솜",
+        "english": "Ribosome",
+        "image": "ribosome.png",
+        "page": "pages/2_리보솜.py",
+        "position": "top",
+    },
+    {
+        "key": "mitochondria",
+        "name": "미토콘드리아",
+        "english": "Mitochondria",
+        "image": "mitochondria.png",
+        "page": "pages/3_미토콘드리아.py",
+        "position": "right",
+    },
+    {
+        "key": "er",
+        "name": "소포체",
+        "english": "Endoplasmic Reticulum",
+        "image": "er.png",
+        "page": "pages/4_소포체.py",
+        "position": "right",
+    },
+    {
+        "key": "golgi",
+        "name": "골지체",
+        "english": "Golgi Apparatus",
+        "image": "golgi.png",
+        "page": "pages/5_골지체.py",
+        "position": "bottom",
+    },
+    {
+        "key": "lysosome",
+        "name": "리소좀",
+        "english": "Lysosome",
+        "image": "lysosome.png",
+        "page": "pages/6_리소좀.py",
+        "position": "bottom",
+    },
+    {
+        "key": "membrane",
+        "name": "세포막",
+        "english": "Cell Membrane",
+        "image": "membrane.png",
+        "page": "pages/7_세포막.py",
+        "position": "left",
+    },
+    {
+        "key": "cytosol",
+        "name": "세포질",
+        "english": "Cytoplasm",
+        "image": "cytosol.png",
+        "page": "pages/8_세포질.py",
+        "position": "left",
+    },
+    {
+        "key": "cytoskeleton",
+        "name": "세포골격",
+        "english": "Cytoskeleton",
+        "image": "cytoskeleton.png",
+        "page": "pages/9_세포골격.py",
+        "position": "bottom",
+    },
+]
+
+# 이미지 파일을 HTML에서 사용할 수 있도록 변환
+def image_to_base64(image_path):
+    if not image_path.exists():
+        return None
+
+    try:
+        with Image.open(image_path) as image:
+            image = image.convert("RGBA")
+            buffer = BytesIO()
+            image.save(buffer, format="PNG")
+            return base64.b64encode(buffer.getvalue()).decode("utf-8")
+    except Exception:
+        return None
+
+
+# 이미지 클릭 시 페이지 이동 처리
+PAGE_BY_KEY = {
+    item["key"]: item["page"]
+    for item in ORGANELLES
 }
 
-[data-testid="stHeader"] {
-    background: #050A13 !important;
-}
+requested_page = st.query_params.get("go")
 
-[data-testid="stSidebar"],
-[data-testid="stSidebar"] > div,
-[data-testid="stSidebarContent"],
-[data-testid="stSidebarNav"] {
-    background: #080F1C !important;
-}
+if requested_page in PAGE_BY_KEY:
+    target_page = PAGE_BY_KEY[requested_page]
 
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] span,
-[data-testid="stSidebar"] label,
-[data-testid="stSidebar"] a {
-    color: #EAF3FF !important;
-}
-
-[data-testid="stSidebarNav"] a {
-    background: #0D192B !important;
-    border-radius: 8px !important;
-    margin: 4px 0 !important;
-}
-
-[data-testid="stSidebarNav"] a:hover {
-    background: #1B3150 !important;
-}
-
-[data-testid="stSidebarNav"] a[aria-current="page"] {
-    background: #183454 !important;
-    border-left: 3px solid #55BFFF !important;
-}
-
-.block-container {
-    max-width: 1250px;
-    padding-top: 1.5rem;
-    padding-bottom: 2rem;
-}
-
-h1, h2, h3, h4, h5, h6, p, label, li {
-    color: #F4F7FF;
-}
-
-.cv-title {
-    text-align: center;
-    font-size: clamp(34px, 4vw, 54px);
-    font-weight: 300;
-    letter-spacing: 5px;
-    color: #F4F8FF;
-    margin: 0 0 28px 0;
-    text-shadow: 0 0 24px #3B82F655;
-}
-
-.orbit-card {
-    text-align: center;
-    margin: 8px auto 20px auto;
-}
-
-.orbit-image {
-    width: 88px;
-    height: 88px;
-    object-fit: contain;
-    border-radius: 50%;
-    padding: 5px;
-    box-sizing: border-box;
-    background: radial-gradient(circle, #132641, #07101F);
-    border: 2px solid #4FBFFF;
-    box-shadow: 0 0 14px #36AAFF55;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.orbit-image:hover {
-    transform: scale(1.06);
-    box-shadow: 0 0 24px #259DFF99;
-}
-
-.orbit-label {
-    color: #FFFFFF !important;
-    font-size: 15px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.orbit-en {
-    color: #A9BCD5 !important;
-    font-size: 11px;
-    text-align: center;
-    margin-top: 3px;
-}
-
-.center-cell {
-    border: 1px solid #244D7A;
-    border-radius: 18px;
-    padding: 8px;
-    background: #07101F;
-    box-shadow: 0 0 35px #168BFF22;
-}
-
-.center-caption {
-    text-align: center;
-    color: #A9BCD5 !important;
-    font-size: 12px;
-    letter-spacing: 2px;
-    margin-top: 8px;
-}
-
-div[data-testid="stButton"] > button {
-    background: #0B192B !important;
-    color: #F4F8FF !important;
-    border: 1px solid #4FBFFF !important;
-}
-
-div[data-testid="stButton"] > button p {
-    color: #F4F8FF !important;
-}
-
-hr {
-    border-color: #263B56 !important;
-}
-</style>
-""", unsafe_allow_html=True)
+    # 반복 이동을 막기 위해 쿼리 매개변수 제거
+    st.query_params.clear()
+    st.switch_page(target_page)
 
 
-# ---------- 제목 ----------
+# 어두운 테마
 st.markdown(
-    '<div class="cv-title">Cell Vision</div>',
+    """
+    <style>
+    .stApp {
+        background-color: #101820;
+        color: #F1F5F9;
+    }
+
+    [data-testid="stHeader"] {
+        background-color: #101820;
+    }
+
+    [data-testid="stSidebar"] {
+        background-color: #17232E;
+    }
+
+    h1, h2, h3, h4, p, label {
+        color: #F1F5F9;
+    }
+
+    [data-testid="stMarkdownContainer"] {
+        color: #F1F5F9;
+    }
+
+    [data-testid="stCaptionContainer"] {
+        color: #B8C5D1;
+    }
+
+    hr {
+        border-color: #34495A;
+    }
+
+    .organelle-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+        text-decoration: none !important;
+        color: #FFFFFF !important;
+        gap: 9px;
+        padding: 12px 4px;
+        border-radius: 16px;
+        transition: background-color 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .organelle-link:hover {
+        background-color: #1D2C39;
+        transform: translateY(-3px);
+    }
+
+    .organelle-image {
+        width: 104px;
+        height: 104px;
+        object-fit: contain;
+        border-radius: 50%;
+        border: 1px solid #405568;
+        background-color: #1A2834;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    .organelle-name {
+        color: #FFFFFF !important;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .organelle-english {
+        color: #B8C5D1 !important;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .image-missing {
+        width: 104px;
+        height: 104px;
+        border-radius: 50%;
+        border: 1px dashed #64798B;
+        background-color: #1A2834;
+        color: #B8C5D1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+
+    .cell-image {
+        display: block;
+        width: 100%;
+        max-width: 500px;
+        max-height: 420px;
+        object-fit: contain;
+        margin: 0 auto;
+    }
+
+    .cell-placeholder {
+        min-height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #B8C5D1;
+        border: 1px dashed #405568;
+        border-radius: 16px;
+        background-color: #17232E;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .center-caption {
+        text-align: center;
+        color: #B8C5D1;
+        font-size: 13px;
+        margin-top: 8px;
+    }
+
+    @media (max-width: 700px) {
+        .organelle-image,
+        .image-missing {
+            width: 76px;
+            height: 76px;
+        }
+
+        .organelle-name {
+            font-size: 14px;
+        }
+
+        .organelle-english {
+            font-size: 10px;
+        }
+    }
+    </style>
+    """,
     unsafe_allow_html=True
 )
 
 
-# ---------- 소기관 데이터 ----------
-organelles = {
-    "핵": {
-        "page": "pages/1_핵.py",
-        "image": "nucleus.png",
-        "english": "Nucleus"
-    },
-    "세포골격": {
-        "page": "pages/9_세포골격.py",
-        "image": "cytoskeleton.png",
-        "english": "Cytoskeleton"
-    },
-    "리보솜": {
-        "page": "pages/2_리보솜.py",
-        "image": "ribosome.png",
-        "english": "Ribosome"
-    },
-    "미토콘드리아": {
-        "page": "pages/3_미토콘드리아.py",
-        "image": "mitochondria.png",
-        "english": "Mitochondria"
-    },
-    "소포체": {
-        "page": "pages/4_소포체.py",
-        "image": "er.png",
-        "english": "Endoplasmic Reticulum"
-    },
-    "골지체": {
-        "page": "pages/5_골지체.py",
-        "image": "golgi.png",
-        "english": "Golgi Apparatus"
-    },
-    "리소좀": {
-        "page": "pages/6_리소좀.py",
-        "image": "lysosome.png",
-        "english": "Lysosome"
-    },
-    "세포막": {
-        "page": "pages/7_세포막.py",
-        "image": "membrane.png",
-        "english": "Cell Membrane"
-    },
-    "세포질": {
-        "page": "pages/8_세포질.py",
-        "image": "cytosol.png",
-        "english": "Cytoplasm"
-    }
-}
+# 소기관 이미지와 이름을 함께 클릭할 수 있는 링크로 표시
+def show_organelle(item):
+    image_path = IMAGE_DIR / item["image"]
+    encoded_image = image_to_base64(image_path)
 
-
-# ---------- 이미지 읽기 ----------
-def load_image(image_path):
-    if not image_path.is_file():
-        return None
-
-    try:
-        with Image.open(image_path) as original:
-            original.load()
-            return original.convert("RGBA")
-    except (OSError, ValueError):
-        return None
-
-
-# ---------- 소기관 카드 ----------
-def show_organelle(name):
-    item = organelles[name]
-    image = load_image(IMG / item["image"])
-
-    st.markdown('<div class="orbit-card">', unsafe_allow_html=True)
-
-    # 이미지를 표시합니다.
-    if image is not None:
-        st.image(image, width=88)
+    if encoded_image:
+        image_html = (
+            f'<img class="organelle-image" '
+            f'src="data:image/png;base64,{encoded_image}" '
+            f'alt="{html.escape(item["name"])}">'
+        )
     else:
-        st.warning(f"{name} 이미지 파일을 찾을 수 없습니다.")
+        image_html = (
+            '<div class="image-missing">이미지 준비 중</div>'
+        )
 
-    # 이미지 아래에 소기관 이름을 표시합니다.
+    name = html.escape(item["name"])
+    english = html.escape(item["english"])
+    key = html.escape(item["key"])
+
     st.markdown(
-        f'<div class="orbit-label">{name}</div>'
-        f'<div class="orbit-en">{item["english"]}</div>',
+        f"""
+        <a class="organelle-link" href="?go={key}">
+            {image_html}
+            <span class="organelle-name">{name}</span>
+            <span class="organelle-english">{english}</span>
+        </a>
+        """,
         unsafe_allow_html=True
     )
 
-    # 버튼은 흰색 배경 문제를 피하기 위해 표시하지 않습니다.
-    # 상세 페이지는 왼쪽 페이지 탐색 메뉴에서 열 수 있습니다.
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ---------- 위쪽 소기관 ----------
-top1, top2, top3, top4, top5 = st.columns(5)
-
-with top1:
-    show_organelle("세포골격")
-
-with top3:
-    show_organelle("핵")
-
-with top5:
-    show_organelle("리보솜")
-
-
-# ---------- 중앙 세포와 양옆 소기관 ----------
-left, center, right = st.columns(
-    [1.15, 2.7, 1.15],
-    gap="medium",
-    vertical_alignment="center"
+# 메인 화면
+st.markdown("# Cell Explorer")
+st.markdown(
+    "세포를 구성하는 소기관을 선택해 구조와 기능을 탐구해 보세요."
 )
 
-with left:
-    show_organelle("세포질")
-    st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
-    show_organelle("세포막")
+st.divider()
 
-with center:
-    cell_image = load_image(IMG / "cell.png")
+# 소기관 위치별 배치
+top_items = [
+    item for item in ORGANELLES
+    if item["position"] == "top"
+]
 
-    if cell_image is not None:
+left_items = [
+    item for item in ORGANELLES
+    if item["position"] == "left"
+]
+
+right_items = [
+    item for item in ORGANELLES
+    if item["position"] == "right"
+]
+
+bottom_items = [
+    item for item in ORGANELLES
+    if item["position"] == "bottom"
+]
+
+# 상단 소기관
+top_cols = st.columns(3, gap="medium")
+
+for col, item in zip(top_cols, top_items):
+    with col:
+        show_organelle(item)
+
+st.divider()
+
+# 중앙 세포 이미지와 좌우 소기관
+left_col, center_col, right_col = st.columns(
+    [1, 2.2, 1],
+    gap="medium"
+)
+
+with left_col:
+    for item in left_items:
+        show_organelle(item)
+
+with center_col:
+    cell_image_path = IMAGE_DIR / "cell.png"
+    cell_image = image_to_base64(cell_image_path)
+
+    if cell_image:
         st.markdown(
-            '<div class="center-cell">',
+            f"""
+            <img
+                class="cell-image"
+                src="data:image/png;base64,{cell_image}"
+                alt="세포 전체 구조"
+            >
+            """,
             unsafe_allow_html=True
         )
-        st.image(cell_image, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
         st.markdown(
-            '<div class="center-caption">EXPLORE THE CELL</div>',
+            '<div class="center-caption">'
+            '세포 전체 구조'
+            '</div>',
             unsafe_allow_html=True
         )
     else:
-        st.warning(
-            "중앙 세포 이미지가 없습니다. "
-            "images 폴더에 cell.png 파일이 있는지 확인해 주세요."
+        st.markdown(
+            """
+            <div class="cell-placeholder">
+                <div>
+                    <strong>세포 전체 이미지</strong><br><br>
+                    images/cell.png 파일을 확인해 주세요.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-with right:
-    show_organelle("미토콘드리아")
-    st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
-    show_organelle("소포체")
+with right_col:
+    for item in right_items:
+        show_organelle(item)
 
+st.divider()
 
-# ---------- 아래쪽 소기관 ----------
-st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+# 하단 소기관
+bottom_cols = st.columns(3, gap="medium")
 
-bottom1, bottom2, bottom3, bottom4, bottom5 = st.columns(5)
+for col, item in zip(bottom_cols, bottom_items):
+    with col:
+        show_organelle(item)
 
-with bottom2:
-    show_organelle("리소좀")
-
-with bottom4:
-    show_organelle("골지체")
-
-
-# ---------- 하단 ----------
-st.markdown("---")
+st.divider()
 
 st.markdown(
     """
-    <div style="
-        text-align:center;
-        color:#9EB2CD;
-        font-size:11px;
-        letter-spacing:2px;
-    ">
-        CELL STRUCTURE · INTERACTIVE BIOLOGY
-    </div>
+    <p style="text-align:center; color:#B8C5D1;">
+        소기관의 원형 이미지를 클릭하면 해당 소기관의 상세 페이지로 이동합니다.
+    </p>
     """,
     unsafe_allow_html=True
 )
