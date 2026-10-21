@@ -11,34 +11,69 @@ st.set_page_config(
 ROOT_DIR = Path(__file__).resolve().parent
 IMAGE_DIR = ROOT_DIR / "images"
 
+# 원형 소기관 버튼 디자인
 st.markdown("""
 <style>
+.organelle-circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 8px auto 18px auto;
+    width: 100%;
+}
+
+/* Streamlit 버튼을 실제 원형으로 설정 */
+.organelle-circle div[data-testid="stButton"] {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.organelle-circle div[data-testid="stButton"] > button {
+    width: 100px !important;
+    min-width: 100px !important;
+    max-width: 100px !important;
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+    padding: 8px !important;
+    border-radius: 50% !important;
+    border: 2px solid #8BAFCF !important;
+    background-color: #EDF5FC !important;
+    color: #244766 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.25 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    box-sizing: border-box !important;
+    flex: 0 0 100px !important;
+    transition: background-color 0.2s ease;
+}
+
+.organelle-circle div[data-testid="stButton"] > button:hover {
+    background-color: #D7E9F8 !important;
+    border-color: #477BA8 !important;
+    color: #173B5C !important;
+}
+
+/* 소기관 그림 크기 */
+.organelle-circle img {
+    object-fit: contain;
+}
+
 .main-title {
     text-align: center;
     font-size: 36px;
     font-weight: 750;
     color: #244766;
 }
+
 .main-description {
     text-align: center;
     color: #64748b;
-    margin-bottom: 20px;
-}
-.organelle-button div.stButton > button {
-    border-radius: 50%;
-    width: 100px;
-    height: 100px;
-    min-height: 100px;
-    white-space: normal;
-    border: 2px solid #9CB8D3;
-    background: #F2F7FC;
-    color: #244766;
-    font-weight: 600;
-    margin: auto;
-}
-.organelle-button div.stButton > button:hover {
-    background: #DCEBFA;
-    border-color: #477BA8;
+    margin-bottom: 24px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -67,51 +102,48 @@ organelles = {
 }
 
 def show_organelle(name):
-    """소기관 이미지와 원형 이동 버튼을 표시합니다."""
     page, image_name = organelles[name]
     image_path = IMAGE_DIR / image_name
+
+    st.markdown('<div class="organelle-circle">', unsafe_allow_html=True)
 
     if image_path.is_file():
         try:
             with Image.open(image_path) as img:
                 img.load()
                 icon_image = img.convert("RGBA")
+                icon_image.thumbnail((72, 72), Image.Resampling.LANCZOS)
 
-            icon_image.thumbnail((90, 90), Image.Resampling.LANCZOS)
-            st.image(icon_image, width=75)
+            st.image(icon_image, width=60)
         except Exception:
-            st.caption("소기관 이미지")
+            st.caption("소기관 그림")
 
-    st.markdown('<div class="organelle-button">', unsafe_allow_html=True)
-
-    if st.button(
-        name,
-        key=f"organelle_{name}",
-        use_container_width=True
-    ):
+    if st.button(name, key=f"organelle_{name}"):
         st.switch_page(page)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-# 첫 번째 줄: 핵, 리보솜, 미토콘드리아
-top = st.columns(9, gap="small")
+# 위쪽 소기관 3개
+top = st.columns([1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-for col, name in zip(
-    [top[0], top[4], top[8]],
-    ["핵", "리보솜", "미토콘드리아"]
-):
-    with col:
-        show_organelle(name)
+with top[1]:
+    show_organelle("핵")
 
-# 두 번째 줄: 왼쪽 소기관 / 중앙 세포 / 오른쪽 소기관
-left, center, right = st.columns([1, 3, 1], gap="medium")
+with top[4]:
+    show_organelle("리보솜")
+
+with top[7]:
+    show_organelle("미토콘드리아")
+
+st.markdown("---")
+
+# 가운데 세포 그림과 양옆 소기관
+left, center, right = st.columns([1.2, 3, 1.2], gap="medium")
 
 with left:
     show_organelle("소포체")
-    st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     show_organelle("골지체")
-    st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     show_organelle("리소좀")
 
 with center:
@@ -123,7 +155,7 @@ with center:
                 img.load()
                 cell_image = img.convert("RGBA")
 
-            # 전체 사진을 자르지 않고 최대 영역 안에 맞춥니다.
+            # 원본 전체가 보이도록 비율을 유지해 축소
             cell_image.thumbnail((650, 500), Image.Resampling.LANCZOS)
 
             st.image(
@@ -135,19 +167,13 @@ with center:
             st.error(f"세포 이미지를 표시하지 못했습니다: {error}")
     else:
         st.warning(
-            "중앙 세포 그림이 없습니다. "
-            "전체 세포 그림을 images/cell.png로 추가해 주세요."
+            "전체 세포 그림을 images/cell.png 경로에 추가해 주세요."
         )
 
 with right:
     show_organelle("세포막")
-    st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     show_organelle("세포질")
-    st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     show_organelle("세포골격")
 
-# 네 번째 위치의 소기관을 포함해 모든 소기관이 중앙 주변에 표시되도록 배치
 st.markdown("---")
-st.caption(
-    "각 소기관 버튼을 누르면 해당 소기관의 상세 탐구 페이지로 이동합니다."
-)
+st.caption("원형 소기관 버튼을 누르면 해당 소기관의 상세 페이지로 이동합니다.")
