@@ -1,7 +1,6 @@
 
 import streamlit as st
 from pathlib import Path
-import math
 
 st.set_page_config(
     page_title="Cell Explorer",
@@ -68,10 +67,10 @@ st.markdown(
 
     .cell-label {
         text-align: center;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         color: #F1F5F9;
-        margin-top: 8px;
+        margin-top: 12px;
     }
     </style>
     """,
@@ -116,22 +115,17 @@ st.title("Cell Explorer")
 st.write("세포를 구성하는 소기관을 탐색하고 각 구조와 기능을 알아보세요.")
 st.divider()
 
-# 원형 배치 영역
-# 중앙에 세포 전체 이미지, 주변에 9개 소기관을 배치합니다.
-orbit_radius = 2
-center_col = 4
-center_row = 2
+# 넓은 중앙 영역과 양옆 소기관 영역
+left, center, right = st.columns([1.2, 3.6, 1.2], gap="large")
 
-grid = []
-for row in range(5):
-    grid.append(st.columns(9, gap="small"))
-
-# 중앙 세포 이미지
-with grid[center_row][center_col]:
+with center:
     cell_image_path = IMAGE_DIR / "cell.png"
 
     if cell_image_path.exists():
-        st.image(str(cell_image_path), use_container_width=True)
+        st.image(
+            str(cell_image_path),
+            width=560
+        )
         st.markdown(
             "<div class='cell-label'>세포 전체 구조</div>",
             unsafe_allow_html=True
@@ -139,24 +133,32 @@ with grid[center_row][center_col]:
     else:
         st.warning("images/cell.png 파일을 확인해 주세요.")
 
-# 각 소기관의 원형 위치 계산
-positions = []
-for index, item in enumerate(ORGANELLES):
-    angle = -90 + index * (360 / len(ORGANELLES))
-    radians = math.radians(angle)
+# 중앙 이미지 양옆 소기관
+with left:
+    show_organelle(ORGANELLES[3], image_width=85)
+    st.write("")
+    show_organelle(ORGANELLES[4], image_width=85)
+    st.write("")
+    show_organelle(ORGANELLES[7], image_width=85)
 
-    x = center_col + round(orbit_radius * math.cos(radians))
-    y = center_row + round(orbit_radius * math.sin(radians))
+with right:
+    show_organelle(ORGANELLES[5], image_width=85)
+    st.write("")
+    show_organelle(ORGANELLES[6], image_width=85)
+    st.write("")
+    show_organelle(ORGANELLES[8], image_width=85)
 
-    x = max(0, min(8, x))
-    y = max(0, min(4, y))
+# 위쪽 소기관
+top = st.columns(5, gap="medium")
 
-    positions.append((x, y, item))
+with top[1]:
+    show_organelle(ORGANELLES[0], image_width=85)
 
-# 소기관 표시
-for x, y, item in positions:
-    with grid[y][x]:
-        show_organelle(item)
+with top[2]:
+    show_organelle(ORGANELLES[1], image_width=85)
+
+with top[3]:
+    show_organelle(ORGANELLES[2], image_width=85)
 
 st.divider()
 st.caption("소기관을 선택하면 해당 상세 페이지로 이동합니다.")
