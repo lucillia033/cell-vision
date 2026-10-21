@@ -3,7 +3,7 @@ import base64
 import html
 import math
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit, urlunsplit
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -29,7 +29,7 @@ ORGANELLES = [
     {"name": "세포골격", "image": "cytoskeleton.png", "page": "pages/9_세포골격.py"},
 ]
 
-# 쿼리 매개변수로 전달된 페이지 이동 요청 처리
+# 허용된 상세 페이지로 이동
 page_lookup = {item["page"]: item["page"] for item in ORGANELLES}
 requested_page = st.query_params.get("go")
 
@@ -38,8 +38,8 @@ if requested_page in page_lookup:
     st.switch_page(page_lookup[requested_page])
 
 
-# 이미지 파일을 HTML에서 사용할 수 있도록 변환
 def image_to_data_uri(image_path):
+    """이미지를 HTML에 직접 포함할 수 있는 URI로 변환합니다."""
     if not image_path.is_file():
         return None
 
@@ -57,10 +57,36 @@ def image_to_data_uri(image_path):
     try:
         encoded = base64.b64encode(
             image_path.read_bytes()
-        ).decode("utf-8")
+        ).decode("ascii")
         return f"data:{mime_type};base64,{encoded}"
     except OSError:
         return None
+
+
+# 현재 앱 주소를 확보하고 쿼리 문자열은 제거합니다.
+# components.html 내부의 상대 주소를 사용하지 않기 위한 처리입니다.
+try:
+    current_url = st.context.url
+except (AttributeError, RuntimeError):
+    current_url = ""
+
+if not current_url:
+    st.error(
+        "현재 앱 주소를 확인할 수 없습니다. "
+        "페이지를 새로고침한 뒤 다시 시도해 주세요."
+    )
+    st.stop()
+
+parsed_url = urlsplit(current_url)
+APP_BASE_URL = urlunsplit(
+    (
+        parsed_url.scheme,
+        parsed_url.netloc,
+        parsed_url.path,
+        "",
+        "",
+    )
+)
 
 
 # 어두운 테마
@@ -88,12 +114,6 @@ st.markdown(
     h1, p {
         color: #F1F5F9;
     }
-
-    .intro-text {
-        color: #B8C5D1;
-        text-align: center;
-        margin-bottom: 4px;
-    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -103,21 +123,18 @@ st.title("Cell Explorer")
 
 st.markdown(
     """
-    <p class="intro-text">
+    <p style="
+        color:#B8C5D1;
+        text-align:center;
+        margin-bottom:4px;
+    ">
         세포를 둘러싼 소기관을 선택해 구조와 기능을 탐색해 보세요.
     </p>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
     <p style="
-        text-align:center;
         color:#8FA8BA;
+        text-align:center;
         font-size:13px;
         margin-top:0;
-        margin-bottom:8px;
     ">
         소기관 이미지를 클릭하면 해당 상세 페이지로 이동합니다.
     </p>
@@ -138,13 +155,13 @@ if cell_image:
 else:
     center_html = """
         <div class="cell-center cell-placeholder">
-            <span>세포 이미지 없음</span>
+            <span>세포 전체 이미지</span>
             <small>images/cell.png 파일을 확인해 주세요.</small>
         </div>
     """
 
 
-# 원형 궤도에 소기관 9개를 균등하게 배치
+# 소기관을 원주에 같은 간격으로 배치
 orbit_items = []
 
 for index, item in enumerate(ORGANELLES):
@@ -156,8 +173,8 @@ for index, item in enumerate(ORGANELLES):
 
     image_uri = image_to_data_uri(IMAGE_DIR / item["image"])
     name = html.escape(item["name"])
-    page = quote(item["page"], safe="")
 
+    # 이미지가 없을 때도 해당 소기관의 링크는 유지합니다.
     if image_uri:
         image_html = (
             f'<img class="organelle-image" '
@@ -169,13 +186,18 @@ for index, item in enumerate(ORGANELLES):
             f'{name}<br>이미지 없음</span>'
         )
 
-    # 부모 페이지의 주소를 기준으로 이동 URL을 생성합니다.
-    # iframe 내부의 상대 주소로 이동하던 기존 방식을 수정했습니다.
+    # URL은 iframe 주소가 아닌 앱 주소를 기준으로 생성합니다.
+    destination = (
+        APP_BASE_URL
+        + "?go="
+        + quote(item["page"], safe="")
+    )
+
     orbit_items.append(
         f"""
         <a class="organelle"
-           href="?go={page}"
-           data-page="{page}"
+           href="{html.escape(destination, quote=True)}"
+           target="_top"
            aria-label="{name} 상세 페이지로 이동"
            style="left:{x:.4f}%;top:{y:.4f}%;">
             <span class="image-circle">
@@ -359,33 +381,6 @@ html, body {{
         {center_html}
         {''.join(orbit_items)}
     </main>
-
-    <script>
-    document.querySelectorAll(".organelle").forEach(function(link) {{
-        link.addEventListener("click", function(event) {{
-            event.preventDefault();
-
-            const page = link.dataset.page;
-            if (!page) return;
-
-            try {{
-                const destination = new URL(
-                    window.parent.location.href
-                );
-
-                destination.searchParams.set(
-                    "go",
-                    decodeURIComponent(page)
-                );
-
-                window.parent.location.href =
-                    destination.toString();
-            }} catch (error) {{
-                window.top.location.href = link.href;
-            }}
-        }});
-    }});
-    </script>
 </body>
 </html>
 """
