@@ -2,8 +2,6 @@
 import streamlit as st
 from pathlib import Path
 from PIL import Image
-from io import BytesIO
-import base64
 
 st.set_page_config(
     page_title="Cell Vision",
@@ -14,7 +12,7 @@ st.set_page_config(
 ROOT = Path(__file__).resolve().parent
 IMG = ROOT / "images"
 
-# ---------- 전체 디자인 ----------
+# ---------- 디자인 ----------
 st.markdown("""
 <style>
 .stApp,
@@ -38,7 +36,6 @@ st.markdown("""
 [data-testid="stSidebarContent"],
 [data-testid="stSidebarNav"] {
     background: #080F1C !important;
-    color: #EAF3FF !important;
 }
 
 [data-testid="stSidebar"] p,
@@ -50,7 +47,6 @@ st.markdown("""
 
 [data-testid="stSidebarNav"] a {
     background: #0D192B !important;
-    color: #EAF3FF !important;
     border-radius: 8px !important;
     margin: 4px 0 !important;
 }
@@ -74,7 +70,6 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     color: #F4F7FF;
 }
 
-/* 메인 제목 */
 .cv-title {
     text-align: center;
     font-size: clamp(34px, 4vw, 54px);
@@ -85,45 +80,29 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     text-shadow: 0 0 24px #3B82F655;
 }
 
-/* 소기관 카드 */
 .orbit-card {
     text-align: center;
     margin: 8px auto 20px auto;
 }
 
-/* 클릭 가능한 원형 이미지 */
-.organelle-link {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 94px;
-    height: 94px;
-    margin: 0 auto;
-    padding: 5px;
-    box-sizing: border-box;
-    border-radius: 50%;
-    border: 2px solid #4FBFFF;
-    background: radial-gradient(circle, #132641, #07101F);
-    box-shadow: 0 0 14px #36AAFF55;
-    transition: all 0.2s ease;
-    text-decoration: none !important;
-}
-
-.organelle-link:hover {
-    border-color: #B3E7FF;
-    box-shadow: 0 0 25px #259DFFAA;
-    transform: scale(1.06);
-}
-
-.organelle-link img {
-    display: block;
-    width: 100%;
-    height: 100%;
+.orbit-image {
+    width: 88px;
+    height: 88px;
     object-fit: contain;
     border-radius: 50%;
+    padding: 5px;
+    box-sizing: border-box;
+    background: radial-gradient(circle, #132641, #07101F);
+    border: 2px solid #4FBFFF;
+    box-shadow: 0 0 14px #36AAFF55;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 소기관 이름 */
+.orbit-image:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 24px #259DFF99;
+}
+
 .orbit-label {
     color: #FFFFFF !important;
     font-size: 15px;
@@ -139,7 +118,6 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     margin-top: 3px;
 }
 
-/* 중앙 세포 이미지 */
 .center-cell {
     border: 1px solid #244D7A;
     border-radius: 18px;
@@ -156,9 +134,14 @@ h1, h2, h3, h4, h5, h6, p, label, li {
     margin-top: 8px;
 }
 
-/* 이미지가 링크일 때 밑줄 제거 */
-a, a:hover, a:visited {
-    text-decoration: none !important;
+div[data-testid="stButton"] > button {
+    background: #0B192B !important;
+    color: #F4F8FF !important;
+    border: 1px solid #4FBFFF !important;
+}
+
+div[data-testid="stButton"] > button p {
+    color: #F4F8FF !important;
 }
 
 hr {
@@ -175,7 +158,7 @@ st.markdown(
 )
 
 
-# ---------- 소기관 정보 ----------
+# ---------- 소기관 데이터 ----------
 organelles = {
     "핵": {
         "page": "pages/1_핵.py",
@@ -238,56 +221,28 @@ def load_image(image_path):
         return None
 
 
-# ---------- 이미지 인코딩 ----------
-def image_to_base64(image):
-    buffer = BytesIO()
-    image.save(buffer, format="PNG")
-    return base64.b64encode(buffer.getvalue()).decode("ascii")
-
-
-# ---------- 클릭 가능한 소기관 카드 ----------
+# ---------- 소기관 카드 ----------
 def show_organelle(name):
     item = organelles[name]
-    image_path = IMG / item["image"]
-    organelle_image = load_image(image_path)
+    image = load_image(IMG / item["image"])
 
     st.markdown('<div class="orbit-card">', unsafe_allow_html=True)
 
-    if organelle_image is not None:
-        encoded_image = image_to_base64(organelle_image)
-
-        # 이미지를 누르면 해당 소기관의 Streamlit 페이지로 이동
-        # 상대 경로 링크로 페이지를 연결합니다.
-        page_url = "/" + item["page"].replace(".py", "").replace(" ", "%20")
-
-        st.markdown(
-            f"""
-            <a class="organelle-link" href="{page_url}" target="_self">
-                <img
-                    src="data:image/png;base64,{encoded_image}"
-                    alt="{name}"
-                >
-            </a>
-            """,
-            unsafe_allow_html=True
-        )
+    # 이미지를 표시합니다.
+    if image is not None:
+        st.image(image, width=88)
     else:
-        st.markdown(
-            f"""
-            <div class="organelle-link">
-                <span style="color:#A9BCD5;font-size:11px;">
-                    이미지 없음
-                </span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+        st.warning(f"{name} 이미지 파일을 찾을 수 없습니다.")
 
+    # 이미지 아래에 소기관 이름을 표시합니다.
     st.markdown(
         f'<div class="orbit-label">{name}</div>'
         f'<div class="orbit-en">{item["english"]}</div>',
         unsafe_allow_html=True
     )
+
+    # 버튼은 흰색 배경 문제를 피하기 위해 표시하지 않습니다.
+    # 상세 페이지는 왼쪽 페이지 탐색 메뉴에서 열 수 있습니다.
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -325,12 +280,7 @@ with center:
             '<div class="center-cell">',
             unsafe_allow_html=True
         )
-
-        st.image(
-            cell_image,
-            use_container_width=True
-        )
-
+        st.image(cell_image, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown(
@@ -339,7 +289,7 @@ with center:
         )
     else:
         st.warning(
-            "중앙 세포 이미지를 찾을 수 없습니다. "
+            "중앙 세포 이미지가 없습니다. "
             "images 폴더에 cell.png 파일이 있는지 확인해 주세요."
         )
 
@@ -361,7 +311,7 @@ with bottom4:
     show_organelle("골지체")
 
 
-# ---------- 하단 문구 ----------
+# ---------- 하단 ----------
 st.markdown("---")
 
 st.markdown(
