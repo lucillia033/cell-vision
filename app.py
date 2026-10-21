@@ -1,6 +1,11 @@
 
-import streamlit as st
+import base64
+import html
+import math
 from pathlib import Path
+
+import streamlit as st
+import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="Cell Explorer",
@@ -35,27 +40,12 @@ st.markdown(
         color: #B8C5D1;
     }
 
-    div.stButton > button {
-        background-color: #243746;
-        color: #F1F5F9;
-        border: 1px solid #405568;
-        border-radius: 12px;
-        min-height: 38px;
-        width: 100%;
-    }
-
-    div.stButton > button:hover {
-        background-color: #344D60;
-        border-color: #7C9BB5;
-        color: #FFFFFF;
-    }
-
-    .stImage img {
-        border-radius: 50%;
-    }
-
     hr {
         border-color: #34495A;
+    }
+
+    iframe {
+        border: none !important;
     }
     </style>
     """,
@@ -65,161 +55,284 @@ st.markdown(
 ORGANELLES = [
     {
         "name": "핵",
-        "english": "Nucleus",
         "image": "nucleus.png",
         "page": "pages/1_핵.py"
     },
     {
         "name": "리보솜",
-        "english": "Ribosome",
         "image": "ribosome.png",
         "page": "pages/2_리보솜.py"
     },
     {
         "name": "미토콘드리아",
-        "english": "Mitochondria",
         "image": "mitochondria.png",
         "page": "pages/3_미토콘드리아.py"
     },
     {
         "name": "소포체",
-        "english": "Endoplasmic Reticulum",
         "image": "er.png",
         "page": "pages/4_소포체.py"
     },
     {
         "name": "골지체",
-        "english": "Golgi Apparatus",
         "image": "golgi.png",
         "page": "pages/5_골지체.py"
     },
     {
         "name": "리소좀",
-        "english": "Lysosome",
         "image": "lysosome.png",
         "page": "pages/6_리소좀.py"
     },
     {
         "name": "세포막",
-        "english": "Cell Membrane",
         "image": "membrane.png",
         "page": "pages/7_세포막.py"
     },
     {
         "name": "세포질",
-        "english": "Cytoplasm",
         "image": "cytosol.png",
         "page": "pages/8_세포질.py"
     },
     {
         "name": "세포골격",
-        "english": "Cytoskeleton",
         "image": "cytoskeleton.png",
         "page": "pages/9_세포골격.py"
     },
 ]
 
 
-def show_organelle(item, image_width=105):
-    """소기관 이미지, 이름, 상세 페이지 이동 버튼을 표시합니다."""
-    image_path = IMAGE_DIR / item["image"]
+def image_to_data_uri(image_path):
+    """이미지를 HTML에서 표시할 수 있는 데이터 URI로 변환합니다."""
+    if not image_path.exists():
+        return None
 
-    if image_path.exists():
-        st.image(str(image_path), width=image_width)
+    suffix = image_path.suffix.lower()
+    mime_types = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".webp": "image/webp",
+        ".gif": "image/gif",
+    }
+    mime_type = mime_types.get(suffix, "application/octet-stream")
+
+    encoded = base64.b64encode(image_path.read_bytes()).decode("utf-8")
+    return f"data:{mime_type};base64,{encoded}"
+
+
+def build_orbit_html():
+    """중앙 세포 이미지와 원형으로 배치된 소기관을 생성합니다."""
+    canvas_size = 760
+    center = canvas_size / 2
+
+    orbit_radius = 285
+    organelle_size = 100
+    center_size = 240
+
+    cell_uri = image_to_data_uri(IMAGE_DIR / "cell.png")
+
+    if cell_uri:
+        center_image = f"""
+            <img
+                class="cell-image"
+                src="{cell_uri}"
+                alt="세포 전체 구조"
+            />
+        """
     else:
-        st.caption(f"이미지 없음: {item['image']}")
+        center_image = """
+            <div class="missing-cell">
+                중앙 세포 이미지가 없습니다.
+            </div>
+        """
 
-    st.markdown(
-        f"<div style='text-align:center; font-weight:600;'>"
-        f"{item['name']}</div>",
-        unsafe_allow_html=True
-    )
+    organelle_elements = []
 
-    st.caption(item["english"])
+    for index, item in enumerate(ORGANELLES):
+        angle = -90 + index * (360 / len(ORGANELLES))
+        radians = math.radians(angle)
 
-    if st.button(
-        "자세히 보기",
-        key=f"open_{item['name']}",
-        use_container_width=True
-    ):
-        st.switch_page(item["page"])
+        x = center + orbit_radius * math.cos(radians)
+        y = center + orbit_radius * math.sin(radians)
+
+        image_path = IMAGE_DIR / item["image"]
+        image_uri = image_to_data_uri(image_path)
+
+        if image_uri:
+            image_element = f"""
+                <img
+                    class="organelle-image"
+                    src="{image_uri}"
+                    alt="{html.escape(item['name'])}"
+                />
+            """
+        else:
+            image_element = f"""
+                <div class="missing-organelle">
+                    이미지 없음
+                </div>
+            """
+
+        # HTML 내부에서 Streamlit의 페이지 경로를 임의로 조작하지 않습니다.
+        # 이 링크는 아래의 페이지 이동 연결 단계에서 처리합니다.
+        page_name = html.escape(item["page"], quote=True)
+
+        organelle_elements.append(f"""
+            <a
+                class="organelle"
+                href="?page={page_name}"
+                aria-label="{html.escape(item['name'])} 상세 페이지"
+                style="
+                    left: {x}px;
+                    top: {y}px;
+                    width: {organelle_size}px;
+                    transform: translate(-50%, -50%);
+                "
+            >
+                {image_element}
+                <span class="organelle-name">
+                    {html.escape(item['name'])}
+                </span>
+            </a>
+        """)
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            * {{
+                box-sizing: border-box;
+            }}
+
+            html, body {{
+                margin: 0;
+                padding: 0;
+                background: #101820;
+                color: #F1F5F9;
+                font-family: Arial, sans-serif;
+            }}
+
+            .orbit-wrapper {{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                overflow: visible;
+            }}
+
+            .orbit {{
+                position: relative;
+                width: {canvas_size}px;
+                height: {canvas_size}px;
+                flex: 0 0 {canvas_size}px;
+            }}
+
+            .cell-center {{
+                position: absolute;
+                left: {center}px;
+                top: {center}px;
+                width: {center_size}px;
+                height: {center_size}px;
+                transform: translate(-50%, -50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }}
+
+            .cell-image {{
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }}
+
+            .missing-cell {{
+                color: #B8C5D1;
+                text-align: center;
+                font-size: 14px;
+            }}
+
+            .organelle {{
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 7px;
+                text-decoration: none;
+                color: #F1F5F9;
+                cursor: pointer;
+                z-index: 2;
+            }}
+
+            .organelle-image {{
+                display: block;
+                width: {organelle_size}px;
+                height: {organelle_size}px;
+                object-fit: contain;
+                border-radius: 50%;
+                transition: transform 0.18s ease;
+            }}
+
+            .organelle:hover .organelle-image {{
+                transform: scale(1.08);
+            }}
+
+            .organelle-name {{
+                display: block;
+                width: 125px;
+                text-align: center;
+                color: #F1F5F9;
+                font-size: 15px;
+                font-weight: 600;
+                line-height: 1.4;
+                white-space: nowrap;
+            }}
+
+            .missing-organelle {{
+                width: {organelle_size}px;
+                height: {organelle_size}px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50%;
+                background: #243746;
+                color: #B8C5D1;
+                font-size: 12px;
+            }}
+
+            @media (max-width: 800px) {{
+                .orbit-wrapper {{
+                    justify-content: flex-start;
+                    overflow-x: auto;
+                }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="orbit-wrapper">
+            <div class="orbit">
+                <div class="cell-center">
+                    {center_image}
+                </div>
+
+                {''.join(organelle_elements)}
+            </div>
+        </div>
+    </body>
+    </html>
+    """
 
 
-# 제목
 st.title("Cell Explorer")
 st.write("세포를 구성하는 소기관을 탐색하고 각 구조와 기능을 알아보세요.")
 st.divider()
 
-# 위쪽 소기관 3개
-top = st.columns(5, gap="small")
-
-with top[1]:
-    show_organelle(ORGANELLES[0])
-
-with top[2]:
-    show_organelle(ORGANELLES[1])
-
-with top[3]:
-    show_organelle(ORGANELLES[2])
-
-st.write("")
-
-# 가운데: 주변 소기관 + 중앙의 세포 전체 이미지
-middle = st.columns([1, 1, 2, 1, 1], gap="small")
-
-with middle[0]:
-    show_organelle(ORGANELLES[3])
-
-with middle[1]:
-    show_organelle(ORGANELLES[4])
-
-with middle[2]:
-    cell_image_path = IMAGE_DIR / "cell.png"
-
-    if cell_image_path.exists():
-        st.image(
-            str(cell_image_path),
-            use_container_width=True
-        )
-        st.markdown(
-            """
-            <div style="
-                text-align:center;
-                font-size:20px;
-                font-weight:700;
-                color:#F1F5F9;
-                margin-top:8px;
-            ">
-                세포 전체 구조
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        st.warning(
-            "중앙 세포 이미지가 없습니다. "
-            "`images/cell.png` 파일을 확인해 주세요."
-        )
-
-with middle[3]:
-    show_organelle(ORGANELLES[5])
-
-with middle[4]:
-    show_organelle(ORGANELLES[6])
-
-st.write("")
-
-# 아래쪽 소기관 2개
-bottom = st.columns(5, gap="small")
-
-with bottom[1]:
-    show_organelle(ORGANELLES[7])
-
-with bottom[3]:
-    show_organelle(ORGANELLES[8])
+components.html(
+    build_orbit_html(),
+    height=780,
+    scrolling=False
+)
 
 st.divider()
-st.caption(
-    "각 소기관의 자세히 보기 버튼을 누르면 "
-    "해당 소기관의 상세 페이지로 이동합니다."
-)
+st.caption("소기관 이미지를 선택해 각 구조와 기능을 탐색할 수 있습니다.")
