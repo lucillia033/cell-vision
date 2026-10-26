@@ -1,6 +1,8 @@
 
 import streamlit as st
 from pathlib import Path
+from io import BytesIO
+from PIL import Image, ImageDraw
 
 st.set_page_config(
     page_title="Cell Vision",
@@ -12,47 +14,19 @@ ROOT_DIR = Path(__file__).resolve().parent
 IMAGE_DIR = ROOT_DIR / "images"
 
 ORGANELLES = {
-    "핵": {
-        "image": "nucleus.png",
-        "page": "pages/1_핵.py",
-    },
-    "리보솜": {
-        "image": "ribosome.png",
-        "page": "pages/2_리보솜.py",
-    },
-    "미토콘드리아": {
-        "image": "mitochondria.png",
-        "page": "pages/3_미토콘드리아.py",
-    },
-    "소포체": {
-        "image": "er.png",
-        "page": "pages/4_소포체.py",
-    },
-    "골지체": {
-        "image": "golgi.png",
-        "page": "pages/5_골지체.py",
-    },
-    "리소좀": {
-        "image": "lysosome.png",
-        "page": "pages/6_리소좀.py",
-    },
-    "세포막": {
-        "image": "membrane.png",
-        "page": "pages/7_세포막.py",
-    },
-    "세포질": {
-        "image": "cytosol.png",
-        "page": "pages/8_세포질.py",
-    },
-    "세포골격": {
-        "image": "cytoskeleton.png",
-        "page": "pages/9_세포골격.py",
-    },
+    "핵": ("nucleus.png", "pages/1_핵.py"),
+    "리보솜": ("ribosome.png", "pages/2_리보솜.py"),
+    "미토콘드리아": ("mitochondria.png", "pages/3_미토콘드리아.py"),
+    "소포체": ("er.png", "pages/4_소포체.py"),
+    "골지체": ("golgi.png", "pages/5_골지체.py"),
+    "리소좀": ("lysosome.png", "pages/6_리소좀.py"),
+    "세포막": ("membrane.png", "pages/7_세포막.py"),
+    "세포질": ("cytosol.png", "pages/8_세포질.py"),
+    "세포골격": ("cytoskeleton.png", "pages/9_세포골격.py"),
 }
 
 CELL_IMAGE = IMAGE_DIR / "cell.png"
 
-# 전체 화면 디자인
 st.markdown(
     """
     <style>
@@ -79,7 +53,7 @@ st.markdown(
         color: #F1F5F9;
     }
 
-    /* 소기관 이름은 흰색으로 표시 */
+    /* 모든 소기관 이름은 흰색 */
     [data-testid="stPageLink"] a,
     [data-testid="stPageLink"] a p {
         color: #FFFFFF !important;
@@ -87,12 +61,12 @@ st.markdown(
         border: none !important;
         box-shadow: none !important;
         text-decoration: none !important;
-        font-size: 0.95rem !important;
-        font-weight: 500 !important;
         justify-content: center !important;
         text-align: center !important;
         padding: 0.1rem 0 !important;
         min-height: 0 !important;
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
     }
 
     [data-testid="stPageLink"] a:hover,
@@ -101,13 +75,6 @@ st.markdown(
         text-decoration: underline !important;
     }
 
-    /* 소기관 이미지는 작고 원형으로 */
-    .organelle-image img {
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    /* 중앙 전체 세포 이미지 */
     .cell-caption {
         color: #FFFFFF;
         text-align: center;
@@ -131,32 +98,70 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("Cell Vision")
-st.write("세포를 구성하는 소기관을 선택해 구조와 기능을 알아보세요.")
-st.divider()
+
+def make_circle_image(image_path, size=400):
+    """원본 이미지의 중앙을 기준으로 원형 이미지를 만듭니다."""
+    with Image.open(image_path) as source:
+        image = source.convert("RGBA")
+
+    # 정사각형으로 맞춘 후 원형 마스크 적용
+    width, height = image.size
+    side = min(width, height)
+
+    left = (width - side) // 2
+    top = (height - side) // 2
+
+    image = image.crop((left, top, left + side, top + side))
+    image = image.resize((size, size), Image.Resampling.LANCZOS)
+
+    mask = Image.new("L", (size, size), 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0, size - 1, size - 1), fill=255)
+
+    image.putalpha(mask)
+    return image
+
+
+def show_circle_image(image_path, width):
+    """원형으로 변환한 이미지를 Streamlit에 표시합니다."""
+    if not image_path.is_file():
+        st.warning(f"이미지를 찾을 수 없습니다: {image_path.name}")
+        return
+
+    try:
+        circular_image = make_circle_image(image_path)
+
+        buffer = BytesIO()
+        circular_image.save(buffer, format="PNG")
+        buffer.seek(0)
+
+        st.image(buffer, width=width)
+
+    except Exception as error:
+        st.error(f"{image_path.name} 이미지를 표시하지 못했습니다.")
+        st.caption(str(error))
 
 
 def show_organelle(name):
-    """작은 소기관 이미지와 흰색 이름을 표시합니다."""
-    info = ORGANELLES[name]
-    image_path = IMAGE_DIR / info["image"]
+    """작은 원형 소기관 이미지와 이름을 표시합니다."""
+    image_name, page_path = ORGANELLES[name]
+    image_path = IMAGE_DIR / image_name
 
-    # 이미지 크기를 중앙 세포 이미지보다 작게 유지
-    if image_path.is_file():
-        st.markdown('<div class="organelle-image">', unsafe_allow_html=True)
-        st.image(str(image_path), width=95)
-        st.markdown("</div>", unsafe_allow_html=True)
-    else:
-        st.warning(f"이미지를 찾을 수 없습니다: images/{info['image']}")
+    # 주변 소기관은 작은 원형 이미지
+    show_circle_image(image_path, width=85)
 
-    # 이름을 누르면 해당 상세 페이지로 이동
+    # 이름을 누르면 상세 페이지로 이동
     st.page_link(
-        info["page"],
+        page_path,
         label=name,
         icon=None,
         use_container_width=True,
     )
 
+
+st.title("Cell Vision")
+st.write("세포를 구성하는 소기관을 선택해 구조와 기능을 알아보세요.")
+st.divider()
 
 # 위쪽 소기관
 top = st.columns(5, gap="small")
@@ -190,8 +195,8 @@ with upper_sides[4]:
 
 st.write("")
 
-# 중앙: 양쪽 소기관과 크게 표시한 전체 세포 이미지
-middle = st.columns([1.1, 0.35, 3.2, 0.35, 1.1], gap="small")
+# 중앙 세포 이미지와 양쪽 소기관
+middle = st.columns([1.1, 0.2, 3.8, 0.2, 1.1], gap="small")
 
 with middle[0]:
     show_organelle("리소좀")
@@ -201,8 +206,9 @@ with middle[1]:
 
 with middle[2]:
     if CELL_IMAGE.is_file():
-        # 중앙 이미지 영역을 넓게 사용
-        st.image(str(CELL_IMAGE), use_container_width=True)
+        # 전체 세포 이미지도 원형으로 변환
+        show_circle_image(CELL_IMAGE, width=440)
+
         st.markdown(
             '<div class="cell-caption">동물세포</div>',
             unsafe_allow_html=True,
@@ -210,7 +216,7 @@ with middle[2]:
     else:
         st.warning(
             "전체 세포 이미지를 찾을 수 없습니다. "
-            "전체 세포 이미지를 images/cell.png로 저장해 주세요."
+            "images 폴더에 cell.png 파일이 있는지 확인해 주세요."
         )
 
 with middle[3]:
