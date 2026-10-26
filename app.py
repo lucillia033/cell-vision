@@ -11,7 +11,6 @@ st.set_page_config(
 ROOT_DIR = Path(__file__).resolve().parent
 IMAGE_DIR = ROOT_DIR / "images"
 
-# 소기관 이미지와 연결할 상세 페이지
 ORGANELLES = {
     "핵": {
         "image": "nucleus.png",
@@ -51,10 +50,9 @@ ORGANELLES = {
     },
 }
 
-# 전체 세포 이미지
 CELL_IMAGE = IMAGE_DIR / "cell.png"
 
-# 전체 디자인
+# 전체 화면 디자인
 st.markdown(
     """
     <style>
@@ -72,61 +70,59 @@ st.markdown(
     }
 
     .block-container {
-        max-width: 1400px;
-        padding-top: 1.5rem;
+        max-width: 1500px;
+        padding-top: 1.2rem;
         padding-bottom: 2rem;
     }
 
-    h1, h2, h3, p, label {
+    h1, h2, h3, p {
         color: #F1F5F9;
     }
 
-    /* 소기관 이미지를 원형으로 표시 */
-    [data-testid="stImage"] img {
+    /* 소기관 이름은 흰색으로 표시 */
+    [data-testid="stPageLink"] a,
+    [data-testid="stPageLink"] a p {
+        color: #FFFFFF !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        text-decoration: none !important;
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 0.1rem 0 !important;
+        min-height: 0 !important;
+    }
+
+    [data-testid="stPageLink"] a:hover,
+    [data-testid="stPageLink"] a:hover p {
+        color: #7DD3FC !important;
+        text-decoration: underline !important;
+    }
+
+    /* 소기관 이미지는 작고 원형으로 */
+    .organelle-image img {
         border-radius: 50%;
         object-fit: cover;
     }
 
-    /* 소기관 이름을 일반 텍스트 링크처럼 표시 */
-    [data-testid="stPageLink"] a {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        color: #F1F5F9 !important;
-        text-decoration: none !important;
-        justify-content: center !important;
-        padding: 0.15rem 0 !important;
-        min-height: 0 !important;
-        font-size: 0.95rem !important;
-        font-weight: 500 !important;
-    }
-
-    [data-testid="stPageLink"] a:hover {
-        color: #7DD3FC !important;
-        background: transparent !important;
-        text-decoration: underline !important;
-    }
-
-    [data-testid="stPageLink"] p {
-        color: inherit !important;
-        text-align: center !important;
-    }
-
-    /* 중앙 세포 이미지 */
+    /* 중앙 전체 세포 이미지 */
     .cell-caption {
+        color: #FFFFFF;
         text-align: center;
-        color: #F1F5F9;
-        font-size: 1rem;
+        font-size: 1.05rem;
         margin-top: 0.4rem;
     }
 
     @media (max-width: 768px) {
         .block-container {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+            padding-left: 0.4rem;
+            padding-right: 0.4rem;
         }
 
-        [data-testid="stPageLink"] a {
+        [data-testid="stPageLink"] a,
+        [data-testid="stPageLink"] a p {
             font-size: 0.75rem !important;
         }
     }
@@ -135,23 +131,25 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 제목
 st.title("Cell Vision")
 st.write("세포를 구성하는 소기관을 선택해 구조와 기능을 알아보세요.")
-
 st.divider()
 
 
 def show_organelle(name):
-    """소기관 이미지와 이름을 표시하고 이름에 상세 페이지를 연결합니다."""
+    """작은 소기관 이미지와 흰색 이름을 표시합니다."""
     info = ORGANELLES[name]
     image_path = IMAGE_DIR / info["image"]
 
+    # 이미지 크기를 중앙 세포 이미지보다 작게 유지
     if image_path.is_file():
-        st.image(str(image_path), use_container_width=True)
+        st.markdown('<div class="organelle-image">', unsafe_allow_html=True)
+        st.image(str(image_path), width=95)
+        st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.warning(f"이미지를 찾을 수 없습니다: images/{info['image']}")
 
+    # 이름을 누르면 해당 상세 페이지로 이동
     st.page_link(
         info["page"],
         label=name,
@@ -160,57 +158,50 @@ def show_organelle(name):
     )
 
 
-def show_empty():
-    """배치에서 빈 공간을 유지합니다."""
+# 위쪽 소기관
+top = st.columns(5, gap="small")
+
+with top[0]:
     st.empty()
-
-
-# 원형 배치
-# 각 행에 5개 열을 두어 세포 이미지를 중심으로 소기관을 둘러 배치합니다.
-
-# 위쪽 소기관 3개
-row1 = st.columns(5, gap="small")
-
-with row1[0]:
-    show_empty()
-with row1[1]:
+with top[1]:
     show_organelle("핵")
-with row1[2]:
+with top[2]:
     show_organelle("리보솜")
-with row1[3]:
+with top[3]:
     show_organelle("미토콘드리아")
-with row1[4]:
-    show_empty()
+with top[4]:
+    st.empty()
 
 st.write("")
 
-# 왼쪽과 오른쪽 위쪽 소기관
-row2 = st.columns(5, gap="small")
+# 중앙 위쪽 양옆 소기관
+upper_sides = st.columns(5, gap="small")
 
-with row2[0]:
+with upper_sides[0]:
     show_organelle("소포체")
-with row2[1]:
-    show_empty()
-with row2[2]:
-    show_empty()
-with row2[3]:
-    show_empty()
-with row2[4]:
+with upper_sides[1]:
+    st.empty()
+with upper_sides[2]:
+    st.empty()
+with upper_sides[3]:
+    st.empty()
+with upper_sides[4]:
     show_organelle("골지체")
 
 st.write("")
 
-# 가운데 세포 이미지와 양쪽 소기관
-row3 = st.columns(5, gap="small")
+# 중앙: 양쪽 소기관과 크게 표시한 전체 세포 이미지
+middle = st.columns([1.1, 0.35, 3.2, 0.35, 1.1], gap="small")
 
-with row3[0]:
+with middle[0]:
     show_organelle("리소좀")
 
-with row3[1]:
-    show_empty()
+with middle[1]:
+    st.empty()
 
-with row3[2]:
+with middle[2]:
     if CELL_IMAGE.is_file():
+        # 중앙 이미지 영역을 넓게 사용
         st.image(str(CELL_IMAGE), use_container_width=True)
         st.markdown(
             '<div class="cell-caption">동물세포</div>',
@@ -219,27 +210,27 @@ with row3[2]:
     else:
         st.warning(
             "전체 세포 이미지를 찾을 수 없습니다. "
-            "전체 세포 이미지를 images/cell.png 파일명으로 저장해 주세요."
+            "전체 세포 이미지를 images/cell.png로 저장해 주세요."
         )
 
-with row3[3]:
-    show_empty()
+with middle[3]:
+    st.empty()
 
-with row3[4]:
+with middle[4]:
     show_organelle("세포막")
 
 st.write("")
 
 # 아래쪽 소기관
-row4 = st.columns(5, gap="small")
+bottom = st.columns(5, gap="small")
 
-with row4[0]:
-    show_empty()
-with row4[1]:
+with bottom[0]:
+    st.empty()
+with bottom[1]:
     show_organelle("세포질")
-with row4[2]:
-    show_empty()
-with row4[3]:
+with bottom[2]:
+    st.empty()
+with bottom[3]:
     show_organelle("세포골격")
-with row4[4]:
-    show_empty()
+with bottom[4]:
+    st.empty()
