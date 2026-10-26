@@ -1,90 +1,141 @@
+
 import streamlit as st
-import os
+from pathlib import Path
 
-st.set_page_config(page_title="Cell Explorer - 리소좀", layout="wide")
+st.set_page_config(page_title="Cell Vision - 리소좀", layout="wide")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+IMAGE_PATH = ROOT_DIR / "images" / "lysosome.png"
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+st.markdown("""
+<style>
+.stApp{background:#101820;color:#F1F5F9}
+[data-testid="stSidebar"]{background:#17232E}
+[data-testid="stHeader"]{background:#101820}
+.block-container{padding-top:2rem;padding-bottom:3rem;max-width:1150px}
+h1,h2,h3{color:#F1F5F9!important}
+p,li,span,label{color:#D9E2EC}
+.overview{background:#17232E;border-left:4px solid #63B3ED;border-radius:8px;padding:18px 22px;line-height:1.8;color:#E2E8F0}
+.article-section{margin-top:30px;line-height:1.9}
+.article-section h2{border-bottom:1px solid #344454;padding-bottom:9px;margin-bottom:15px}
+.article-section h3{color:#90CDF4!important;margin-top:22px;margin-bottom:8px}
+div.stButton>button{background:#233647;color:#F1F5F9;border:1px solid #52677A;border-radius:8px}
+div.stButton>button:hover{background:#304B61;color:#FFF;border-color:#90CDF4}
+hr{border-color:#344454}
+</style>
+""", unsafe_allow_html=True)
 
-if "selected_sub_struct_lyso" not in st.session_state:
-    st.session_state["selected_sub_struct_lyso"] = None
+if st.button("← 메인 화면으로 돌아가기"):
+    st.switch_page("app.py")
 
-if st.button("← 세포소기관 목록으로"):
-    st.switch_page("pages/0_메인.py")
+st.title("리소좀")
+st.caption("Lysosome · 세포 내 물질을 분해하고 재활용하는 소기관")
 
-col_left, col_right = st.columns([1, 1.1], gap="large")
-
-with col_left:
-    main_img_path = os.path.join(BASE_DIR, "images", "lysosome.png")
-    if os.path.exists(main_img_path):
-        st.image(main_img_path, use_container_width=True)
+st.divider()
+image_col, overview_col = st.columns([1, 1.25], gap="large")
+with image_col:
+    if IMAGE_PATH.exists():
+        st.image(str(IMAGE_PATH), width="stretch")
     else:
-        st.info("images/lysosome.png 대표 이미지를 등록해 주세요.")
-    st.caption("각 세부 구조를 클릭하면 자세한 설명을 볼 수 있습니다.")
+        st.warning("images/lysosome.png 파일을 찾을 수 없습니다.")
 
-with col_right:
-    st.title("리소좀 (Lysosome)")
-    st.write("가수분해 효소로 손상된 부품과 외부 물질을 소화하는 재활용 센터")
-    
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown("#### 주요 기능")
-        st.caption("• 이물질 분해 소화\n• 손상 소기관 자가포식\n• 세포 자살 유도")
-    with c2:
-        st.markdown("#### 위치")
-        st.caption("• 세포질 전반에 분포")
-    with c3:
-        st.markdown("#### 주요 구성 요소")
-        st.caption("• 단일막 주머니\n• 가수분해 효소\n• 수소 이온 펌프")
-
-    st.markdown("---")
-    
-    st.info("""
-    **리소좀은 왜 중요할까요?**  
-    세포 내 노폐물이나 외부 세균이 처리되지 못하면 세포 기능이 마비됩니다. 
-    리소좀은 세균을 파괴하고 수명이 다한 소기관을 분해하여 다시 유용한 영양소 원료로 재활용합니다.
-    """)
+with overview_col:
+    st.subheader("개요")
+    st.markdown("""
+    <div class="overview">
+    리소좀은 막으로 둘러싸인 소기관으로, 내부에 여러 가수분해 효소를
+    가지고 있다. 내부는 세포질보다 산성인 환경으로 유지되어 효소가
+    물질을 분해하기에 적합하다. 리소좀은 세포 안으로 들어온 물질과
+    오래되거나 손상된 세포 구성 요소를 분해하고, 그 결과물을
+    세포가 다시 이용할 수 있도록 돕는다.
+    </div>
+    """, unsafe_allow_html=True)
 
 st.markdown("---")
+st.markdown("""
+<div class="article-section">
 
-st.subheader("리소좀의 주요 구성 요소")
-st.write("강력한 내부 효소가 세포 자체를 파괴하지 못하도록 막으로 안전하게 차단되어 있습니다.")
+## 구조
 
-sub_structures = [
-    {
-        "key": "single_membrane",
-        "title": "단일막 및 수소 펌프",
-        "img": "lyso_membrane.png",
-        "desc": "효소의 외부 유출을 차단하며 내부를 산성으로 유지합니다.",
-        "detail": "V-ATPase 펌프를 가동하여 H+ 이온을 집어넣어 내부 pH 4.5~5.0 환경을 형성합니다."
-    },
-    {
-        "key": "acid_hydrolases",
-        "title": "가수분해 효소군",
-        "img": "lyso_enzymes.png",
-        "desc": "단백질, 지질, 핵산, 다당류를 분해하는 50여 가지 효소입니다.",
-        "detail": "산성 상태에서만 활성화되므로 혹시 막이 찢어져 유출되어도 중성 세포질에서는 활성을 잃습니다."
-    }
-]
+### 리소좀 막
 
-cols = st.columns(2, gap="medium")
+리소좀은 단일 막으로 둘러싸여 있다. 막은 분해 효소와 분해 중인
+물질을 세포질과 구분하여 세포의 다른 구성 요소가 불필요하게
+분해되는 것을 방지한다. 막에는 수소 이온을 내부로 이동시키는
+단백질과 분해 산물을 세포질로 운반하는 단백질이 존재한다.
 
-for idx, item in enumerate(sub_structures):
-    with cols[idx]:
-        sub_img_path = os.path.join(BASE_DIR, "images", item["img"])
-        if os.path.exists(sub_img_path):
-            st.image(sub_img_path, use_container_width=True)
-        else:
-            st.info(f"images/{item['img']}")
-            
-        st.markdown(f"**{item['title']}**")
-        st.caption(item["desc"])
-        
-        if st.button("자세히 보기 →", key=item["key"], use_container_width=True):
-            if st.session_state["selected_sub_struct_lyso"] == item["key"]:
-                st.session_state["selected_sub_struct_lyso"] = None
-            else:
-                st.session_state["selected_sub_struct_lyso"] = item["key"]
+### 가수분해 효소
 
-if st.session_state["selected_sub_struct_lyso"]:
-    selected_item = next(i for i in sub_structures if i["key"] == st.session_state["selected_sub_struct_lyso"])
-    st.success(f"**{selected_item['title']} 상세 정보:** {selected_item['detail']}")
+리소좀에는 단백질, 핵산, 지질, 탄수화물 등을 분해하는 여러
+가수분해 효소가 존재한다. 이 효소들은 물을 이용해 큰 분자의
+화학 결합을 끊고 작은 분자로 분해한다.
+
+### 산성 내부 환경
+
+리소좀 내부는 세포질보다 낮은 pH를 유지한다. 막 단백질이
+수소 이온을 내부로 운반하여 산성 환경을 만든다. 많은 리소좀
+효소는 이러한 환경에서 높은 활성을 보인다.
+
+## 주요 기능
+
+### 세포 내 소화
+
+세포가 세포내섭취로 받아들인 물질은 소낭에 담겨 세포 안으로
+들어온다. 이 소낭이 리소좀과 융합하면 효소가 물질을 분해한다.
+분해 결과로 생성된 작은 분자 중 일부는 세포질로 이동해 다시 사용된다.
+
+### 손상된 세포 구성 요소의 제거
+
+세포 내부의 단백질과 소기관은 시간이 지나면서 손상되거나 기능이
+저하될 수 있다. 리소좀은 이러한 구성 요소의 분해와 재활용에
+관여하여 세포 내부 환경을 유지한다.
+
+### 물질 재활용
+
+분해된 아미노산, 당, 지방산 등의 일부는 세포의 대사 과정에
+다시 이용될 수 있다. 따라서 리소좀은 불필요한 물질을 제거하는
+동시에 세포가 필요한 물질을 회수하도록 돕는다.
+
+## 작동 원리
+
+### 물질을 소낭에 담기
+
+세포는 세포막을 안쪽으로 함입하여 세포 밖의 물질을 소낭 안에
+받아들일 수 있다. 이러한 세포내섭취를 통해 들어온 물질은
+세포 내부의 소낭 이동 경로를 거친다.
+
+### 소낭과 리소좀의 융합
+
+물질을 담은 소낭이 리소좀 또는 리소좀으로 이어지는 구획과
+융합하면 분해 효소가 작용할 수 있는 환경이 형성된다. 효소는
+물질을 더 작은 분자로 분해하며, 분해된 산물은 운반 단백질을
+통해 세포질로 이동할 수 있다.
+
+### 자가포식
+
+자가포식은 세포 내부의 일부 구성 요소를 막으로 둘러싸
+분해 경로로 보내는 과정이다. 이 과정에서 손상된 소기관이나
+오래된 세포 구성 요소가 분해되고, 그 성분이 재활용될 수 있다.
+자가포식은 세포의 상태와 영양 조건 등에 따라 조절된다.
+
+## 다른 세포소기관과의 관계
+
+### 소포체
+
+리소좀의 분해 효소를 구성하는 단백질은 리보솜에서 합성되어
+소포체로 들어간다. 소포체에서 접힘과 초기 가공을 거친 뒤
+골지체로 전달된다.
+
+### 골지체
+
+골지체는 리소좀으로 보내질 효소를 가공하고 분류한다.
+이후 운반 소낭과 세포 내 막 수송 경로를 통해 효소가 적절한
+구획에 전달되어 리소좀의 기능이 유지된다.
+
+### 세포막
+
+세포막은 세포내섭취를 통해 물질을 세포 안으로 받아들인다.
+그 물질이 리소좀의 분해 경로로 전달되면 세포는 외부에서
+들어온 물질을 분해하고 필요한 성분을 회수할 수 있다.
+
+</div>
+""", unsafe_allow_html=True)
