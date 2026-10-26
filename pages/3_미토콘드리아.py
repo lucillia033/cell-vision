@@ -1,208 +1,141 @@
 
 import streamlit as st
-import os
+from pathlib import Path
 
-st.set_page_config(
-    page_title="Cell Explorer - 미토콘드리아",
-    page_icon="🔬",
-    layout="wide"
-)
+st.set_page_config(page_title="Cell Vision - 미토콘드리아", layout="wide")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+IMAGE_PATH = ROOT_DIR / "images" / "mitochondria.png"
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-IMAGE_DIR = os.path.join(BASE_DIR, "images")
+st.markdown("""
+<style>
+.stApp{background:#101820;color:#F1F5F9}
+[data-testid="stSidebar"]{background:#17232E}
+[data-testid="stHeader"]{background:#101820}
+.block-container{padding-top:2rem;padding-bottom:3rem;max-width:1150px}
+h1,h2,h3{color:#F1F5F9!important}
+p,li,span,label{color:#D9E2EC}
+.overview{background:#17232E;border-left:4px solid #63B3ED;border-radius:8px;padding:18px 22px;line-height:1.8;color:#E2E8F0}
+.article-section{margin-top:30px;line-height:1.9}
+.article-section h2{border-bottom:1px solid #344454;padding-bottom:9px;margin-bottom:15px}
+.article-section h3{color:#90CDF4!important;margin-top:22px;margin-bottom:8px}
+div.stButton>button{background:#233647;color:#F1F5F9;border:1px solid #52677A;border-radius:8px}
+div.stButton>button:hover{background:#304B61;color:#FFF;border-color:#90CDF4}
+hr{border-color:#344454}
+</style>
+""", unsafe_allow_html=True)
 
-if "selected_sub_struct_mito" not in st.session_state:
-    st.session_state["selected_sub_struct_mito"] = None
-
-# 메인 화면으로 돌아가기
-if st.button("← 세포소기관 목록으로", key="back_to_main_mito"):
-    st.switch_page("pages/0_메인.py")
+if st.button("← 메인 화면으로 돌아가기"):
+    st.switch_page("app.py")
 
 st.title("미토콘드리아")
-st.caption("Mitochondria · 세포의 에너지 전환 기관")
+st.caption("Mitochondrion · 세포 호흡을 통해 ATP를 합성하는 소기관")
 
-st.markdown("---")
-
-# 대표 이미지와 핵심 정보
-col_left, col_right = st.columns([1, 1.15], gap="large")
-
-with col_left:
-    main_img_path = os.path.join(IMAGE_DIR, "mitochondria.png")
-
-    if os.path.exists(main_img_path):
-        st.image(main_img_path, use_container_width=True)
+st.divider()
+image_col, overview_col = st.columns([1, 1.25], gap="large")
+with image_col:
+    if IMAGE_PATH.exists():
+        st.image(str(IMAGE_PATH), width="stretch")
     else:
-        st.warning("대표 이미지 파일을 찾을 수 없습니다: images/mitochondria.png")
+        st.warning("images/mitochondria.png 파일을 찾을 수 없습니다.")
 
-    st.caption("미토콘드리아의 전체 구조")
-
-with col_right:
-    st.subheader("미토콘드리아란?")
-    st.write(
-        "미토콘드리아는 세포 호흡에 관여하며, "
-        "영양소에서 얻은 에너지를 ATP 형태로 전환하는 세포소기관입니다."
-    )
-
-    st.markdown("### 주요 기능")
-    st.markdown(
-        """
-        - 세포 호흡과 ATP 합성
-        - 지방산 등 여러 영양소의 대사
-        - 세포 내 칼슘 이온 조절
-        - 세포 사멸 신호 조절에 관여
-        """
-    )
-
-    st.markdown("### 위치")
-    st.write(
-        "대부분의 진핵세포에서 세포질에 분포합니다. "
-        "에너지 수요와 세포 종류에 따라 수와 분포가 달라집니다."
-    )
-
-    st.markdown("### 주요 구성")
-    st.write("외막, 내막, 막 사이 공간, 크리스타, 기질, 미토콘드리아 DNA")
+with overview_col:
+    st.subheader("개요")
+    st.markdown("""
+    <div class="overview">
+    미토콘드리아는 유기물에 저장된 에너지를 이용해 ATP를 합성하는
+    세포소기관이다. 내부와 외부에 두 겹의 막이 있으며, 안쪽 막은
+    크리스타라고 하는 주름진 구조를 이룬다. 기질과 내막은 세포 호흡의
+    여러 반응이 일어나는 장소를 제공한다. 미토콘드리아는 자체 DNA와
+    리보솜도 가지고 있다.
+    </div>
+    """, unsafe_allow_html=True)
 
 st.markdown("---")
+st.markdown("""
+<div class="article-section">
 
-with st.expander("미토콘드리아는 어떻게 ATP를 합성할까요?", expanded=True):
-    st.markdown(
-        """
-        **1. 기질에서 일어나는 반응**
+## 구조
 
-        피루브산 산화와 TCA 회로를 통해 전자를 운반하는 NADH와 FADH₂가 생성됩니다.
+### 외막
 
-        **2. 내막의 전자전달계**
+외막은 미토콘드리아의 바깥을 둘러싼 막이다. 여러 물질의 출입에
+관여하는 단백질이 존재하며, 미토콘드리아의 내부 환경을 외부와
+구분한다.
 
-        전자가 전달되는 과정에서 방출되는 에너지를 이용해 수소 이온이 막 사이 공간으로 이동합니다.
+### 내막과 크리스타
 
-        **3. ATP 합성효소의 작용**
+내막은 외막보다 선택적으로 물질의 이동을 조절한다. 내막이 안쪽으로
+접혀 형성된 크리스타에는 전자 전달계의 단백질과 ATP 합성효소가
+존재한다. 주름진 구조는 막의 표면적을 넓혀 에너지 합성에 필요한
+단백질이 작용할 공간을 제공한다.
 
-        수소 이온이 기질 쪽으로 돌아오면서 ATP 합성효소가 작동하고, ADP와 인산으로부터 ATP가 생성됩니다.
-        """
-    )
+### 기질
 
-st.markdown("---")
+기질은 내막 안쪽을 채우는 공간이다. 이곳에는 여러 대사 효소와
+미토콘드리아 DNA, 리보솜이 존재한다. 피루브산 산화와 시트르산
+회로의 주요 반응이 기질에서 일어난다.
 
-st.subheader("미토콘드리아의 주요 구성 요소")
-st.write(
-    "아래 구조를 선택하면 해당 부분의 기능과 에너지 생산 과정에서의 역할을 자세히 확인할 수 있습니다."
-)
+## 주요 기능
 
-sub_structures = [
-    {
-        "key": "outer_inner_membrane",
-        "title": "외막 및 내막",
-        "english": "Outer and Inner Membrane",
-        "img": "mito_membrane.png",
-        "desc": "미토콘드리아의 내부 환경과 물질 이동을 조절합니다.",
-        "detail": """
-**외막**
-- 미토콘드리아의 바깥 경계를 형성합니다.
-- 여러 물질의 이동을 조절하는 단백질을 포함합니다.
+### ATP 합성
 
-**내막**
-- 전자전달계와 ATP 합성효소가 위치합니다.
-- 수소 이온 농도 기울기를 유지하는 데 중요한 역할을 합니다.
-- 이온과 여러 분자의 이동을 선택적으로 조절합니다.
-""",
-        "connection": "내막의 수소 이온 농도 기울기는 산화적 인산화와 ATP 합성에 필수적입니다."
-    },
-    {
-        "key": "cristae",
-        "title": "크리스타",
-        "english": "Cristae",
-        "img": "mito_cristae.png",
-        "desc": "내막이 안쪽으로 접혀 만들어진 주름입니다.",
-        "detail": """
-- 내막의 표면적을 넓혀 줍니다.
-- 전자전달계 단백질과 ATP 합성효소가 작용할 수 있는 공간을 제공합니다.
-- 세포의 에너지 수요에 따라 구조와 배열이 달라질 수 있습니다.
-""",
-        "connection": "크리스타는 내막의 구조적 특징으로, 효율적인 에너지 전환에 기여합니다."
-    },
-    {
-        "key": "matrix",
-        "title": "기질",
-        "english": "Matrix",
-        "img": "mito_matrix.png",
-        "desc": "내막 안쪽을 채우며 여러 대사 반응이 일어나는 공간입니다.",
-        "detail": """
-- 피루브산 산화와 TCA 회로에 필요한 효소가 존재합니다.
-- 미토콘드리아 DNA와 RNA가 존재합니다.
-- 미토콘드리아 리보솜을 이용한 일부 단백질 합성이 일어납니다.
-- 여러 대사 반응을 통해 에너지 전환에 필요한 물질을 공급합니다.
-""",
-        "connection": "기질에서 생성된 NADH와 FADH₂는 내막의 전자전달계에 전자를 전달합니다."
-    }
-]
+ATP는 세포에서 다양한 반응에 에너지를 전달하는 분자이다.
+미토콘드리아는 유기물이 분해되는 과정에서 방출되는 에너지를 이용해
+ADP와 무기 인산으로부터 ATP를 합성한다.
 
-cols = st.columns(3, gap="medium")
+### 대사 조절
 
-for idx, item in enumerate(sub_structures):
-    with cols[idx]:
-        sub_img_path = os.path.join(IMAGE_DIR, item["img"])
+미토콘드리아는 세포 호흡뿐 아니라 세포 내 칼슘 농도 조절,
+활성산소 생성과 제거의 균형, 세포 사멸 신호 등에도 관여한다.
+따라서 미토콘드리아의 역할은 단순히 에너지를 생산하는 데 그치지 않는다.
 
-        if os.path.exists(sub_img_path):
-            st.image(sub_img_path, use_container_width=True)
-        else:
-            st.info(f"세부 구조 이미지 준비 중: {item['img']}")
+## 작동 원리
 
-        st.markdown(f"### {item['title']}")
-        st.caption(item["english"])
-        st.write(item["desc"])
+### 해당과정과 피루브산의 이동
 
-        button_label = (
-            "설명 접기 ↑"
-            if st.session_state["selected_sub_struct_mito"] == item["key"]
-            else "자세히 보기 →"
-        )
+포도당의 해당과정은 세포질에서 일어나며, 포도당이 분해되어
+피루브산과 소량의 ATP가 생성된다. 산소를 이용하는 세포 호흡에서는
+피루브산이 미토콘드리아로 이동해 추가적인 산화 과정을 거친다.
 
-        if st.button(
-            button_label,
-            key=f"toggle_{item['key']}",
-            use_container_width=True
-        ):
-            if st.session_state["selected_sub_struct_mito"] == item["key"]:
-                st.session_state["selected_sub_struct_mito"] = None
-            else:
-                st.session_state["selected_sub_struct_mito"] = item["key"]
+### 시트르산 회로
 
-if st.session_state["selected_sub_struct_mito"]:
-    selected_item = next(
-        item
-        for item in sub_structures
-        if item["key"] == st.session_state["selected_sub_struct_mito"]
-    )
+피루브산에서 유래한 아세틸-CoA는 기질에서 시트르산 회로에
+들어간다. 이 과정에서 이산화탄소가 방출되고, 전자 운반체인
+NADH와 FADH₂가 생성된다. 이 운반체는 높은 에너지를 가진 전자를
+전자 전달계로 전달한다.
 
-    st.markdown("---")
+### 전자 전달계와 화학 삼투
 
-    st.subheader(f"{selected_item['title']} 상세 탐구")
-    st.caption(selected_item["english"])
+전자 전달계는 내막에 위치한 여러 단백질 복합체로 이루어진다.
+전자가 전달되는 동안 방출되는 에너지로 수소 이온이 기질에서
+막 사이 공간으로 이동한다. 이로 인해 내막 양쪽에 수소 이온의
+농도 차와 전기적 차이가 형성된다.
 
-    st.markdown(selected_item["detail"])
+수소 이온은 ATP 합성효소를 통과해 기질 쪽으로 이동한다.
+이 흐름에서 얻은 에너지를 ATP 합성효소가 이용하여 ATP를 만든다.
+이 원리를 화학 삼투라고 한다. 산소는 전자 전달계의 마지막
+전자 수용체로 작용하며, 전자와 수소 이온을 받아 물이 생성된다.
 
-    st.info(selected_item["connection"])
+## 다른 세포소기관과의 관계
 
-    if st.button("상세 설명 닫기", key="close_mito_detail"):
-        st.session_state["selected_sub_struct_mito"] = None
-        st.rerun()
+### 세포질
 
-st.markdown("---")
+해당과정은 세포질에서 일어나며, 여기서 생성된 피루브산은
+미토콘드리아로 이동한다. 따라서 세포질과 미토콘드리아의 대사
+작용은 연속적으로 연결되어 있다.
 
-st.subheader("핵심 정리")
+### 핵
 
-st.markdown(
-    """
-    | 구성 요소 | 핵심 역할 |
-    |---|---|
-    | 외막 | 미토콘드리아의 바깥 경계를 형성 |
-    | 내막 | 전자전달계와 ATP 합성효소가 위치 |
-    | 크리스타 | 내막의 표면적을 넓혀 에너지 전환에 기여 |
-    | 기질 | 피루브산 산화, TCA 회로 등 여러 대사 반응 수행 |
-    """
-)
+미토콘드리아의 여러 단백질은 핵의 DNA에 있는 유전 정보에 따라
+세포질의 리보솜에서 합성된 뒤 미토콘드리아로 운반된다. 미토콘드리아는
+자체 DNA도 가지고 있지만, 기능에 필요한 모든 단백질을 자체적으로
+만들지는 못한다.
 
-st.caption(
-    "참고: 미토콘드리아의 ATP 합성은 기질에서의 대사 반응과 "
-    "내막에서의 산화적 인산화가 연결되어 이루어집니다."
-)
+### 세포막
+
+세포막의 수송체는 포도당 등 세포 호흡에 필요한 물질의 세포 내
+유입에 관여한다. 미토콘드리아에서 만들어진 ATP는 세포질에서
+일어나는 능동 수송과 다양한 생명 활동에 사용된다.
+
+</div>
+""", unsafe_allow_html=True)
