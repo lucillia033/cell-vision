@@ -1,4 +1,19 @@
+
+import sys
+from pathlib import Path
+
+import streamlit as st
+
+# 프로젝트 최상위 폴더 경로
+ROOT_DIR = Path(__file__).resolve().parent.parent
+IMAGE_DIR = ROOT_DIR / "images"
+
+# page_utils.py를 불러올 수 있도록 프로젝트 경로 추가
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from page_utils import render_page
+
 
 content = """
 ### 1-1. 핵의 개념과 기능
@@ -28,4 +43,9 @@ content = """
 유전 정보의 발현은 DNA에 저장된 정보가 RNA나 단백질과 같은 기능적 산물로 이어지는 과정이다. 단백질을 암호화하는 유전자의 경우 DNA의 정보가 mRNA로 전사되며, mRNA는 핵공을 통해 세포질로 이동한다. 이후 리보솜에서 mRNA의 유전 정보가 해독되어 아미노산이 연결되고 단백질이 합성된다.
 """
 
-render_page("핵 (Nucleus)", "nucleus.png", content)
+
+render_page(
+    title="핵 (Nucleus)",
+    image_name="nucleus.png",
+    content=content,
+)
