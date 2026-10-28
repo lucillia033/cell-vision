@@ -2,152 +2,103 @@
 import streamlit as st
 from pathlib import Path
 
-st.set_page_config(page_title="Cell Vision - 세포골격", layout="wide")
+st.set_page_config(page_title="CELL VISION | Cytoskeleton", layout="wide", initial_sidebar_state="expanded")
 ROOT_DIR = Path(__file__).resolve().parent.parent
 IMAGE_PATH = ROOT_DIR / "images" / "cytoskeleton.png"
 
 st.markdown("""
 <style>
-.stApp{background:#101820;color:#F1F5F9}
-[data-testid="stSidebar"]{background:#17232E}
-[data-testid="stHeader"]{background:#101820}
-.block-container{padding-top:2rem;padding-bottom:3rem;max-width:1150px}
-h1,h2,h3{color:#F1F5F9!important}
-p,li,span,label{color:#D9E2EC}
-.overview{background:#17232E;border-left:4px solid #63B3ED;border-radius:8px;padding:18px 22px;line-height:1.8;color:#E2E8F0}
-.article-section{margin-top:30px;line-height:1.9}
-.article-section h2{border-bottom:1px solid #344454;padding-bottom:9px;margin-bottom:15px}
-.article-section h3{color:#90CDF4!important;margin-top:22px;margin-bottom:8px}
-div.stButton>button{background:#233647;color:#F1F5F9;border:1px solid #52677A;border-radius:8px}
-div.stButton>button:hover{background:#304B61;color:#FFF;border-color:#90CDF4}
-hr{border-color:#344454}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+.stApp {background:radial-gradient(ellipse at top,#102433 0%,#050b12 58%);color:#dceaf0;font-family:'Noto Sans KR',sans-serif}
+[data-testid="stSidebar"] {background:#07111b;border-right:1px solid #244454}
+[data-testid="stHeader"] {background:#050b12}
+.block-container {max-width:1800px;padding-top:1.2rem;padding-bottom:3rem}
+h1,h2,h3,p,li,label {color:#dceaf0}
+h1 {font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px}
+.stCaption,[data-testid="stCaptionContainer"] {color:#7993a3!important}
+.stButton>button {background:#0b1c29;color:#dceaf0;border:1px solid #315568;border-radius:2px}
+.stButton>button:hover {background:#123044;color:#57d9e8;border-color:#57d9e8}
+[data-testid="stSidebarNav"] {display:none}
+.side-brand {border-top:2px solid #6d95a7;border-bottom:1px solid #284655;padding:13px 6px;background:linear-gradient(110deg,#122533,#07111b);margin-bottom:20px}
+.side-brand-title {font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:700;letter-spacing:2px;color:#dceaf0}
+.side-brand-sub {font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#57d9e8;margin-top:5px}
+.side-section {font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:#57d9e8;border-bottom:1px solid #244454;padding-bottom:7px;margin:18px 0 10px}
+.side-info {font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.9;color:#7993a3}
+[data-testid="stSidebar"] [data-testid="stPageLink"] a {border:1px solid transparent;border-radius:2px;padding:8px 10px}
+[data-testid="stSidebar"] [data-testid="stPageLink"] a:hover {background:#0b1c29;border-color:#315568}
+[data-testid="stSidebar"] [data-testid="stPageLink"] p {font-family:'IBM Plex Mono',monospace;font-size:12px}
+.top-strip {display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid #315568;border-bottom:1px solid #244454;padding:9px 0;margin-bottom:25px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:#7993a3}
+.eyebrow {font-family:'IBM Plex Mono',monospace;color:#57d9e8;font-size:11px;letter-spacing:2px;margin-bottom:7px}
+.overview {background:linear-gradient(110deg,#102533,#091722);border-left:3px solid #57d9e8;padding:18px 22px;line-height:1.9;color:#dceaf0;margin:18px 0;border-top:1px solid #244454;border-bottom:1px solid #244454}
+.article-section {line-height:1.95;margin-top:28px}
+.article-section h2 {font-family:'IBM Plex Mono','Noto Sans KR',sans-serif;border-bottom:1px solid #315568;padding-bottom:10px;color:#57d9e8!important;font-size:22px;margin-top:30px}
+.article-section h3 {color:#8bd9b0!important;font-size:17px;margin-top:22px}
+.article-section p,.article-section li {color:#c6d7e0}
+.info-label {font-family:'IBM Plex Mono',monospace;color:#57d9e8;font-size:10px;letter-spacing:1px}
 </style>
 """, unsafe_allow_html=True)
 
+with st.sidebar:
+    st.markdown("""<div class="side-brand"><div class="side-brand-title">CELL VISION</div><div class="side-brand-sub">BIOLOGICAL OPERATIONS UNIT</div></div><div class="side-section">01 / COMMAND MENU</div>""", unsafe_allow_html=True)
+    st.markdown("**COMMAND CENTER**")
+    st.caption("현재 화면 · 작전 지휘 통제실")
+    st.page_link("app.py", label="메인 화면")
+    st.markdown('<div class="side-section">02 / INTELLIGENCE FILES</div>', unsafe_allow_html=True)
+    pages = [("BIO-01 / 핵","pages/1_핵.py"),("BIO-02 / 리보솜","pages/2_리보솜.py"),("BIO-03 / 미토콘드리아","pages/3_미토콘드리아.py"),("BIO-04 / 소포체","pages/4_소포체.py"),("BIO-05 / 골지체","pages/5_골지체.py"),("BIO-06 / 리소좀","pages/6_리소좀.py"),("BIO-07 / 세포막","pages/7_세포막.py"),("BIO-08 / 세포질","pages/8_세포질.py"),("BIO-09 / 세포골격","pages/9_세포골격.py")]
+    for label, path in pages:
+        st.page_link(path, label=label)
+    st.markdown("""<div class="side-section">03 / SYSTEM MONITOR</div><div class="side-info">SYSTEM STATUS · ONLINE<br>DATABASE · LOCAL FILES<br>SECURITY LEVEL · BIO-RESTRICTED<br>ACCESS MODE · EDUCATIONAL</div><br><hr><div class="side-info">CELL VISION / INTERNAL USE</div>""", unsafe_allow_html=True)
+
+st.markdown("""<div class="top-strip"><span>SYSTEM / CELLULAR INTELLIGENCE</span><span>STATUS / ONLINE</span><span>FILE / BIO-09</span></div><div class="eyebrow">TACTICAL BIOLOGY INTERFACE // INTELLIGENCE FILE</div>""", unsafe_allow_html=True)
+st.title("세포골격 | CYTOSKELETON")
+st.caption("BIO-09 · 세포 형태 유지와 세포 내부 수송 및 운동")
 if st.button("← 메인 화면으로 돌아가기"):
     st.switch_page("app.py")
-
-st.title("세포골격")
-st.caption("Cytoskeleton · 세포의 형태와 내부 구조를 지지하고 움직임을 돕는 단백질 섬유 체계")
-
 st.divider()
-image_col, overview_col = st.columns([1, 1.25], gap="large")
-with image_col:
+
+left, right = st.columns([1, 1.6], gap="large")
+with left:
     if IMAGE_PATH.exists():
-        st.image(str(IMAGE_PATH), width="stretch")
+        st.image(str(IMAGE_PATH), use_container_width=True)
     else:
-        st.warning("images/cytoskeleton.png 파일을 찾을 수 없습니다.")
+        st.warning("이미지를 찾을 수 없습니다: images/cytoskeleton.png")
+with right:
+    st.markdown("""<div class="overview"><div class="info-label">CORE INTELLIGENCE</div>세포골격은 세포 내부에 그물처럼 분포하는 단백질 섬유 구조이다. 세포의 형태를 유지하고 세포소기관의 위치를 지지하며, 세포 내부의 물질 수송과 세포 분열 및 운동에 관여한다.</div>""", unsafe_allow_html=True)
 
-with overview_col:
-    st.subheader("개요")
-    st.markdown("""
-    <div class="overview">
-    세포골격은 세포 내부에 분포하는 단백질 섬유의 체계이다. 세포의
-    형태를 지지하고 세포소기관의 위치를 유지하며, 세포 내부의 물질
-    수송과 세포 운동에도 관여한다. 주요 구성 요소에는 미세소관,
-    미세섬유, 중간섬유가 있으며, 각각의 구조와 성질에 따라 서로 다른
-    기능을 수행한다.
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("---")
 st.markdown("""
 <div class="article-section">
+<h2>01 / STRUCTURE ANALYSIS · 구조</h2>
+<h3>미세소관</h3>
+<p>미세소관은 튜불린 단백질로 이루어진 속이 빈 관 모양의 구조이다. 세포 내부에서 소낭과 세포소기관이 이동하는 경로가 되며, 세포 분열 때 방추사를 형성해 염색체의 이동에 관여한다.</p>
+<h3>미세섬유</h3>
+<p>미세섬유는 주로 액틴 단백질로 이루어진 가느다란 섬유이다. 세포의 형태 변화, 세포 이동, 근육 수축, 세포질 분열 등에 관여한다.</p>
+<h3>중간섬유</h3>
+<p>중간섬유는 여러 단백질로 이루어진 섬유 구조로, 세포에 기계적인 강도를 제공한다. 세포가 물리적인 힘을 받을 때 구조가 쉽게 손상되지 않도록 지지하며, 일부 세포에서는 핵의 형태 유지에도 관여한다.</p>
 
-## 구조
+<h2>02 / PRIMARY FUNCTIONS · 주요 기능</h2>
+<h3>세포 형태 유지</h3>
+<p>세포골격은 세포 내부의 구조를 지지하고 세포의 형태를 유지하도록 돕는다. 세포의 종류와 기능에 따라 각 섬유의 분포와 배열이 달라질 수 있다.</p>
+<h3>세포 내부 수송</h3>
+<p>미세소관과 액틴 섬유는 운동 단백질과 함께 소낭 및 세포소기관의 이동에 관여한다. 이를 통해 세포 내부의 필요한 위치로 물질을 전달할 수 있다.</p>
+<h3>세포 분열과 운동</h3>
+<p>세포 분열에서는 미세소관으로 이루어진 방추사가 염색체를 분리하는 데 관여한다. 액틴 미세섬유는 세포질 분열 과정에서 세포가 나뉘는 데 중요한 역할을 한다. 세포골격은 일부 세포의 이동과 형태 변화에도 관여한다.</p>
 
-### 미세소관
+<h2>03 / OPERATION PROCESS · 작동 원리</h2>
+<h3>섬유의 조립과 해체</h3>
+<p>세포골격 섬유는 단백질 소단위체가 결합하거나 분리되면서 구조가 바뀔 수 있다. 이러한 변화는 세포가 모양을 바꾸거나 내부 구조를 재배치하는 데 중요하다.</p>
+<h3>운동 단백질을 통한 이동</h3>
+<p>운동 단백질은 세포골격 섬유를 따라 이동하면서 소낭이나 세포소기관을 운반할 수 있다. 이동에는 ATP의 에너지가 이용되며, 세포 내부의 물질이 적절한 장소로 전달되도록 돕는다.</p>
+<h3>세포 분열에서의 역할</h3>
+<p>세포 분열 시 미세소관이 재구성되어 방추사를 형성한다. 방추사는 염색체에 연결되어 염색체가 딸세포로 분리되도록 돕고, 액틴 미세섬유는 세포질 분열에 관여한다.</p>
 
-미세소관은 튜불린 단백질로 이루어진 속이 빈 관 형태의 섬유이다.
-세포 내부에서 물질이 이동하는 경로가 되며, 세포 분열 때 염색체를
-분리하는 방추사의 주요 구성 요소가 된다. 일부 세포에서는 섬모와
-편모의 구조를 형성하는 데에도 관여한다.
-
-### 미세섬유
-
-미세섬유는 주로 액틴 단백질로 이루어진 가는 섬유이다. 세포막
-아래쪽에 분포하여 세포의 형태를 유지하고, 세포의 모양 변화와
-이동, 근육 수축, 세포질 분열 등에 관여한다.
-
-### 중간섬유
-
-중간섬유는 여러 종류의 섬유 단백질로 구성되며, 세포에 기계적
-강도를 제공한다. 세포가 당기거나 눌리는 힘을 받을 때 구조를
-지지하고, 핵과 세포 내부의 일부 구조가 안정적으로 유지되도록 돕는다.
-
-## 주요 기능
-
-### 세포 형태 유지
-
-세포골격은 세포 내부에 지지 구조를 제공하여 세포가 일정한
-형태를 유지하도록 돕는다. 세포 종류와 기능에 따라 섬유의
-배열과 밀도가 달라질 수 있다.
-
-### 세포 내 물질 수송
-
-미세소관은 소낭과 일부 세포소기관이 이동하는 경로로 작용한다.
-운동 단백질은 ATP의 에너지를 이용해 이러한 구조물을 섬유를 따라
-운반한다. 이를 통해 물질이 세포 내부의 적절한 장소에 전달된다.
-
-### 세포 분열
-
-세포 분열 과정에서 미세소관은 방추사를 형성한다. 방추사는
-염색체에 연결되어 염색체가 딸세포로 분배되도록 돕는다.
-액틴 미세섬유는 동물세포의 세포질 분열에서 수축환을 형성해
-세포가 두 개로 나뉘는 과정에 관여한다.
-
-### 세포 운동
-
-액틴과 미오신의 상호작용은 세포의 형태 변화와 이동, 근육 수축에
-중요하다. 미세소관과 운동 단백질은 섬모와 편모의 움직임에도
-관여할 수 있다.
-
-## 작동 원리
-
-### 섬유의 조립과 분해
-
-세포골격 섬유는 고정된 구조가 아니라 구성 단백질이 결합하거나
-분리되면서 재구성될 수 있다. 세포는 섬유의 조립과 분해를 조절하여
-필요한 위치에 구조를 만들거나 이동 방향을 바꾼다.
-
-### 운동 단백질의 작용
-
-키네신과 다이네인은 주로 미세소관을 따라 물질을 운반하는
-운동 단백질이다. 미오신은 액틴과 상호작용하여 힘을 발생시킨다.
-이들 단백질은 ATP의 에너지를 이용해 구조적 변화를 일으키며,
-세포 내부의 물질 이동과 움직임을 가능하게 한다.
-
-### 세포 분열 중 방추사 형성
-
-세포 분열이 진행되면 미세소관이 재배열되어 방추사를 형성한다.
-방추사는 염색체에 연결되고, 미세소관의 길이 변화와 운동 단백질의
-작용을 통해 염색체가 서로 반대쪽으로 이동하도록 돕는다.
-
-## 다른 세포소기관과의 관계
-
-### 핵
-
-중간섬유의 한 종류인 라민은 핵막 안쪽에서 핵막을 지지하는
-핵라미나를 형성한다. 핵라미나는 핵의 형태 유지와 염색질의
-배열 및 핵 기능 조절에도 관여한다.
-
-### 소포체와 골지체
-
-소포체와 골지체에서 만들어진 운반 소낭은 세포골격과 운동 단백질의
-도움을 받아 이동할 수 있다. 이러한 수송은 단백질과 지질이
-세포 내부의 목적지로 전달되는 데 중요하다.
-
-### 세포막
-
-세포골격은 세포막 안쪽과 연결되어 세포의 형태를 지지하고
-막의 일부 단백질이 위치를 유지하도록 돕는다. 액틴 섬유의 재구성은
-세포막의 돌출과 세포 이동 등에도 관여한다.
-
-### 미토콘드리아
-
-미토콘드리아를 포함한 세포소기관은 세포 내부에서 위치를 바꾸거나
-특정 영역에 분포할 수 있다. 세포골격과 운동 단백질은 일부
-세포소기관의 이동과 분포 조절에 관여한다.
-
+<h2>04 / SYSTEM CONNECTIONS · 다른 세포 구성 요소와의 관계</h2>
+<h3>핵</h3>
+<p>세포골격은 핵 주변의 구조를 지지하고 세포 분열 과정에서 염색체의 이동에 관여한다.</p>
+<h3>소포체와 골지체</h3>
+<p>소포체와 골지체 사이를 이동하는 운반 소낭은 세포골격과 운동 단백질의 도움을 받아 세포 내부에서 이동할 수 있다.</p>
+<h3>세포막</h3>
+<p>세포골격은 세포막의 형태와 일부 막 단백질의 위치를 지지한다. 세포의 이동이나 형태 변화가 일어날 때에도 세포막과 세포골격이 함께 작용한다.</p>
+<h3>미토콘드리아</h3>
+<p>미토콘드리아가 생산하는 ATP는 운동 단백질의 활동과 세포골격의 재구성 등 에너지가 필요한 세포 과정에 이용된다.</p>
 </div>
 """, unsafe_allow_html=True)
