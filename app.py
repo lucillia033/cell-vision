@@ -970,7 +970,7 @@ with right_col:
 
 # 소기관별 상세 정보를 확인할 수 있는 자료 구역의 제목을 표시합니다.
 st.markdown(
-    '<div class="section-bar">INTELLIGENCE FILES // ORGANELLE DATABASE</div>',
+    '<div class="section-bar">다음은 우리가 확보한 기밀 자료이다. 전체를 다 숙지한 후 작전에 돌입하기를 바란다.</div>',
     unsafe_allow_html=True,
 )
 
