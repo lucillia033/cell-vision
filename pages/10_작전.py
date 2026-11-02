@@ -15,14 +15,17 @@ st.markdown(
     [data-testid="stHeader"] {
         background: #070C13;
     }
+
     [data-testid="stSidebar"] {
         background: #101923;
     }
+
     .block-container {
         padding-top: 1rem;
         padding-bottom: 1rem;
         max-width: 1500px;
     }
+
     div[data-testid="stPageLink"] a {
         display: flex;
         justify-content: center;
@@ -37,6 +40,7 @@ st.markdown(
         letter-spacing: .7px;
         border-radius: 0;
     }
+
     div[data-testid="stPageLink"] a:hover {
         border-color: #9bcfff;
         background: #2a3a4b;
@@ -177,13 +181,17 @@ button{font-family:inherit}
 .status{margin-top:10px;color:#9eb3c9;font-size:10px;line-height:1.6}
 .overlay{position:absolute;z-index:20;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:#03070df2;text-align:center}
 .overlay.show{display:flex}
-.result-box{width:min(500px,100%);padding:30px 20px;border:1px solid #536c85;background:#101a27;box-shadow:0 0 60px #1a5b8a33}
+.result-box{width:min(560px,100%);padding:30px 20px;border:1px solid #536c85;background:#101a27;box-shadow:0 0 60px #1a5b8a33}
 .result-title{margin-bottom:12px;font-size:clamp(25px,5vw,39px);font-weight:900;letter-spacing:2px}
 .fail{color:#ff6a79}.win{color:#7bc9ff}
+.result-kicker{margin-bottom:12px;color:#8dbce9;font-size:10px;letter-spacing:2px}
+.result-status{margin-bottom:15px;color:#7bc9ff;font-size:12px;font-weight:800;letter-spacing:1.5px}
 .result-desc{margin-bottom:22px;color:#c1cfde;font-size:13px;line-height:1.9}
 .result-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
 .retry{padding:13px 18px;border:1px solid #6abaff;background:#193b57;color:#f2f8ff;font-size:11px;font-weight:800;letter-spacing:.7px;cursor:pointer}
 .retry:hover{background:#255a80}
+.return-base{border-color:#78d5b0;background:#12362f;color:#c8ffe8}
+.return-base:hover{background:#1b5145}
 @media(max-width:680px){
 .game{min-height:760px}.topbar{align-items:flex-start;padding:14px}.enemy-hud{width:145px;max-width:42vw}
 .arena{height:255px}.machine{width:140px;height:155px}.machine:before{width:65px;height:110px}
@@ -191,12 +199,14 @@ button{font-family:inherit}
 .bottom{grid-template-columns:1fr;padding:9px}.player-panel{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .panel-title{grid-column:1/-1;margin-bottom:0}.small-label{margin-top:4px}
 .question{font-size:14px}.answers{grid-template-columns:1fr}
+.result-box{padding:24px 15px}
 }
 </style>
 </head>
 <body>
 <div class="game" id="game">
 <div class="grid"></div>
+
 <div class="topbar">
 <div>
 <div class="kicker">CELL VISION / OPERATION CELL SHIELD</div>
@@ -208,33 +218,57 @@ button{font-family:inherit}
 <div class="bar-track" id="enemyBars"></div>
 </div>
 </div>
+
 <div class="arena" id="arena">
 <div class="machine"></div>
 <div class="unit-label player-label">PLAYER / OPERATIVE</div>
 <div class="unit-label enemy-label">BLACK VEIL / ELITE</div>
+
 <div class="fighter player" id="player">
 <div class="helmet"></div><div class="body-shape"></div>
 <div class="shoulder left"></div><div class="shoulder right"></div>
 <div class="arm left"></div><div class="arm right"></div><div class="belt"></div>
 <div class="leg left"></div><div class="leg right"></div>
 <div class="boot left"></div><div class="boot right"></div><div class="pouch"></div>
-<div class="weapon-model" id="playerWeapon"><div class="weapon-stock"></div><div class="weapon-body"></div><div class="weapon-barrel"></div><div class="weapon-scope"></div><div class="weapon-grip"></div></div>
+<div class="weapon-model" id="playerWeapon">
+<div class="weapon-stock"></div><div class="weapon-body"></div>
+<div class="weapon-barrel"></div><div class="weapon-scope"></div>
+<div class="weapon-grip"></div>
 </div>
+</div>
+
 <div class="fighter enemy" id="enemy">
 <div class="helmet"></div><div class="body-shape"></div>
 <div class="shoulder left"></div><div class="shoulder right"></div>
 <div class="arm left"></div><div class="arm right"></div><div class="belt"></div>
 <div class="leg left"></div><div class="leg right"></div>
 <div class="boot left"></div><div class="boot right"></div><div class="pouch"></div>
-<div class="weapon-model"><div class="weapon-stock"></div><div class="weapon-body"></div><div class="weapon-barrel"></div><div class="weapon-scope"></div><div class="weapon-grip"></div></div>
+<div class="weapon-model">
+<div class="weapon-stock"></div><div class="weapon-body"></div>
+<div class="weapon-barrel"></div><div class="weapon-scope"></div>
+<div class="weapon-grip"></div>
 </div>
-<div class="projectile" id="projectile"></div><div class="blast" id="blast"></div><div class="floor"></div>
 </div>
+
+<div class="projectile" id="projectile"></div>
+<div class="blast" id="blast"></div>
+<div class="floor"></div>
+</div>
+
 <div class="bottom">
 <div class="player-panel">
 <div class="panel-title">OPERATIVE STATUS</div>
-<div><div class="small-label">PLAYER HP <span id="hpCount">4 / 4</span></div><div class="hp-track" id="hpBars"></div></div>
-<div><div class="small-label">COMBO <span id="comboCount">0</span> / 2</div><div class="energy-track"><div class="energy-fill" id="energyFill"></div></div></div>
+
+<div>
+<div class="small-label">PLAYER HP <span id="hpCount">4 / 4</span></div>
+<div class="hp-track" id="hpBars"></div>
+</div>
+
+<div>
+<div class="small-label">COMBO <span id="comboCount">0</span> / 2</div>
+<div class="energy-track"><div class="energy-fill" id="energyFill"></div></div>
+</div>
+
 <div style="grid-column:1/-1">
 <div class="small-label">EQUIPPED WEAPONS</div>
 <div class="weapon active" id="rifleSlot">1 — PULSE RIFLE</div>
@@ -243,20 +277,34 @@ button{font-family:inherit}
 <div class="weapon-hint" id="weaponHint">PULSE RIFLE 장착 중</div>
 </div>
 </div>
+
 <div class="question-panel">
-<div class="question-meta"><span id="questionNumber">MISSION QUESTION 01</span><span id="accuracy">CORRECT 0 · WRONG 0</span></div>
+<div class="question-meta">
+<span id="questionNumber">MISSION QUESTION 01</span>
+<span id="accuracy">CORRECT 0 · WRONG 0</span>
+</div>
 <div class="question" id="questionText"></div>
 <div class="answers" id="answers"></div>
 <div class="feedback" id="feedback">문제를 풀어 작전을 진행하십시오.</div>
-<div class="action-row"><button class="action" id="nextButton" disabled>NEXT QUESTION</button></div>
+<div class="action-row">
+<button class="action" id="nextButton" disabled>NEXT QUESTION</button>
+</div>
 <div class="status" id="status">연속 2정답: 수류탄 공격 / 체력 소진: 임무 실패</div>
 </div>
 </div>
+
 <div class="overlay" id="overlay">
 <div class="result-box">
+<div class="result-kicker" id="resultKicker">CELL VISION // MISSION REPORT</div>
 <div class="result-title" id="resultTitle">MISSION FAILED</div>
+<div class="result-status" id="resultStatus">MISSION STATUS / FAILED</div>
 <div class="result-desc" id="resultDesc"></div>
-<div class="result-actions"><button class="retry" id="retryButton">RETRY MISSION</button></div>
+<div class="result-actions">
+<button class="retry" id="retryButton">RETRY MISSION</button>
+<button class="retry return-base" id="returnButton" style="display:none;">
+RETURN TO BASE
+</button>
+</div>
 </div>
 </div>
 </div>
@@ -280,186 +328,447 @@ const questionBank = [
 ];
 
 const $ = id => document.getElementById(id);
-let questions=[], questionIndex=0, playerHP=4, enemyHP=10, combo=0;
-let correctTotal=0, wrongTotal=0, locked=false, finished=false, perfectRun=true;
-let actionToken=0, timers=[];
 
-function later(callback,delay){
-    const timer=setTimeout(()=>{timers=timers.filter(t=>t!==timer);callback();},delay);
+let questions = [];
+let questionIndex = 0;
+let playerHP = 4;
+let enemyHP = 10;
+let combo = 0;
+let correctTotal = 0;
+let wrongTotal = 0;
+let locked = false;
+let finished = false;
+let perfectRun = true;
+let actionToken = 0;
+let timers = [];
+
+function later(callback, delay) {
+    const timer = setTimeout(() => {
+        timers = timers.filter(t => t !== timer);
+        callback();
+    }, delay);
     timers.push(timer);
 }
-function clearTimers(){timers.forEach(clearTimeout);timers=[];}
-function shuffle(array){
-    const result=[...array];
-    for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
+
+function clearTimers() {
+    timers.forEach(clearTimeout);
+    timers = [];
+}
+
+function shuffle(array) {
+    const result = [...array];
+
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+    }
+
     return result;
 }
-function setWeapon(type){
-    const model=$("playerWeapon");
-    model.classList.remove("grenade-mode","heavy-mode");
-    $("rifleSlot").className="weapon";
-    $("grenadeSlot").className="weapon";
-    $("heavySlot").className="weapon";
-    if(type==="grenade"){model.classList.add("grenade-mode");$("grenadeSlot").classList.add("grenade-active");$("weaponHint").textContent="GRENADE 장착 · 연속 2정답 공격";}
-    else if(type==="heavy"){model.classList.add("heavy-mode");$("heavySlot").classList.add("heavy-active");$("weaponHint").textContent="HEAVY BOMB 발동 · 완벽 작전";}
-    else{$("rifleSlot").classList.add("active");$("weaponHint").textContent="PULSE RIFLE 장착 중";}
+
+function setWeapon(type) {
+    const model = $("playerWeapon");
+
+    model.classList.remove("grenade-mode", "heavy-mode");
+    $("rifleSlot").className = "weapon";
+    $("grenadeSlot").className = "weapon";
+    $("heavySlot").className = "weapon";
+
+    if (type === "grenade") {
+        model.classList.add("grenade-mode");
+        $("grenadeSlot").classList.add("grenade-active");
+        $("weaponHint").textContent =
+            "GRENADE 장착 · 연속 2정답 공격";
+    } else if (type === "heavy") {
+        model.classList.add("heavy-mode");
+        $("heavySlot").classList.add("heavy-active");
+        $("weaponHint").textContent =
+            "HEAVY BOMB 발동 · 완벽 작전";
+    } else {
+        $("rifleSlot").classList.add("active");
+        $("weaponHint").textContent = "PULSE RIFLE 장착 중";
+    }
 }
-function renderBars(){
-    $("enemyBars").innerHTML="";
-    for(let i=0;i<10;i++){const cell=document.createElement("div");cell.className="enemy-cell"+(i>=enemyHP?" empty":"");$("enemyBars").appendChild(cell);}
-    $("enemyCount").textContent=`${enemyHP} / 10`;
-    $("hpBars").innerHTML="";
-    for(let i=0;i<4;i++){const cell=document.createElement("div");cell.className="hp-unit"+(i>=playerHP?" lost":"");$("hpBars").appendChild(cell);}
-    $("hpCount").textContent=`${playerHP} / 4`;
-    $("comboCount").textContent=combo;
-    $("energyFill").style.width=`${combo*50}%`;
-    $("accuracy").textContent=`CORRECT ${correctTotal} · WRONG ${wrongTotal}`;
+
+function renderBars() {
+    $("enemyBars").innerHTML = "";
+
+    for (let i = 0; i < 10; i++) {
+        const cell = document.createElement("div");
+        cell.className = "enemy-cell" + (i >= enemyHP ? " empty" : "");
+        $("enemyBars").appendChild(cell);
+    }
+
+    $("enemyCount").textContent = `${enemyHP} / 10`;
+    $("hpBars").innerHTML = "";
+
+    for (let i = 0; i < 4; i++) {
+        const cell = document.createElement("div");
+        cell.className = "hp-unit" + (i >= playerHP ? " lost" : "");
+        $("hpBars").appendChild(cell);
+    }
+
+    $("hpCount").textContent = `${playerHP} / 4`;
+    $("comboCount").textContent = combo;
+    $("energyFill").style.width = `${combo * 50}%`;
+
+    $("accuracy").textContent =
+        `CORRECT ${correctTotal} · WRONG ${wrongTotal}`;
 }
-function loadQuestion(){
-    if(finished)return;
-    locked=false;
-    $("nextButton").disabled=true;
-    const item=questions[questionIndex];
-    $("questionNumber").textContent=`MISSION QUESTION ${String(questionIndex+1).padStart(2,"0")}`;
-    $("questionText").textContent=item.q;
-    $("feedback").textContent="정답을 선택하십시오.";
-    $("answers").innerHTML="";
-    item.a.forEach((answer,index)=>{
-        const button=document.createElement("button");
-        button.className="answer";
-        button.textContent=`${String.fromCharCode(65+index)}. ${answer}`;
-        button.addEventListener("click",()=>submitAnswer(index));
+
+function loadQuestion() {
+    if (finished) return;
+
+    locked = false;
+    $("nextButton").disabled = true;
+
+    const item = questions[questionIndex];
+
+    $("questionNumber").textContent =
+        `MISSION QUESTION ${String(questionIndex + 1).padStart(2, "0")}`;
+    $("questionText").textContent = item.q;
+    $("feedback").textContent = "정답을 선택하십시오.";
+    $("answers").innerHTML = "";
+
+    item.a.forEach((answer, index) => {
+        const button = document.createElement("button");
+
+        button.className = "answer";
+        button.textContent = `${String.fromCharCode(65 + index)}. ${answer}`;
+        button.addEventListener("click", () => submitAnswer(index));
+
         $("answers").appendChild(button);
     });
 }
-function animateShot(type,token){
-    if(finished||token!==actionToken)return;
-    const projectile=$("projectile"),arena=$("arena"),player=$("player"),enemy=$("enemy");
-    const startX=player.offsetLeft+player.offsetWidth*.8,startY=arena.clientHeight-105,endX=enemy.offsetLeft+enemy.offsetWidth*.2;
-    projectile.className="projectile";
-    if(type==="grenade")projectile.classList.add("grenade");
-    if(type==="heavy")projectile.classList.add("heavy");
-    projectile.style.display="block";projectile.style.left=`${startX}px`;projectile.style.top=`${startY}px`;
-    player.classList.remove("attack");void player.offsetWidth;player.classList.add("attack");
-    const duration=type==="heavy"?650:type==="grenade"?480:300,start=performance.now();
-    function step(now){
-        if(finished||token!==actionToken){projectile.style.display="none";return;}
-        const progress=Math.min((now-start)/duration,1);
-        const curve=type==="grenade"?Math.sin(progress*Math.PI)*-65:type==="heavy"?Math.sin(progress*Math.PI)*-25:0;
-        projectile.style.left=`${startX+(endX-startX)*progress}px`;
-        projectile.style.top=`${startY+curve}px`;
-        if(progress<1)requestAnimationFrame(step);
-        else{
-            projectile.style.display="none";
-            if(type==="heavy"||type==="grenade")showBlast(endX,startY,type,token);
-            else{hitEnemy(1);finishAnswerAction();}
-        }
-    }
-    requestAnimationFrame(step);
-}
-function showBlast(x,y,type,token){
-    if(finished||token!==actionToken)return;
-    const blast=$("blast");
-    blast.style.left=`${x-10}px`;blast.style.top=`${y-10}px`;blast.style.display="block";
-    blast.animate([{transform:"scale(.2)",opacity:1},{transform:"scale(3.8)",opacity:.95},{transform:"scale(6)",opacity:0}],{duration:type==="heavy"?900:650,easing:"ease-out"});
-    if(type==="heavy")$("feedback").textContent="HEAVY BOMB IMPACT! 완벽한 작전 수행.";
-    later(()=>{
-        if(finished||token!==actionToken)return;
-        blast.style.display="none";
-        if(type==="heavy"){enemyHP=0;renderBars();endGame(true);}
-        else{hitEnemy(2);finishAnswerAction();}
-    },type==="heavy"?650:420);
-}
-function hitEnemy(damage){
-    if(finished)return;
-    $("enemy").classList.add("hit");
-    later(()=>$("enemy").classList.remove("hit"),220);
-    enemyHP=Math.max(0,enemyHP-damage);renderBars();
-    if(enemyHP<=0)endGame(true);
-}
-function finishAnswerAction(){
-    if(finished)return;
-    locked=false;
-    $("nextButton").disabled=false;
-}
-function submitAnswer(selected){
-    if(locked||finished)return;
-    locked=true;
-    const token=++actionToken,item=questions[questionIndex];
-    const buttons=[...$("answers").querySelectorAll("button")];
-    buttons.forEach(button=>button.disabled=true);
-    if(selected===item.correct){
-        correctTotal++;combo++;buttons[selected].classList.add("correct");
-        if(questionIndex===9&&correctTotal===10&&wrongTotal===0&&perfectRun){
-            combo=0;setWeapon("heavy");renderBars();
-            $("feedback").textContent=`PERFECT CLEAR! 대형 폭탄을 발동합니다. ${item.explain}`;
-            $("nextButton").disabled=true;
-            later(()=>{if(!finished&&token===actionToken)animateShot("heavy",token);},350);
+
+function animateShot(type, token) {
+    if (finished || token !== actionToken) return;
+
+    const projectile = $("projectile");
+    const arena = $("arena");
+    const player = $("player");
+    const enemy = $("enemy");
+
+    const startX = player.offsetLeft + player.offsetWidth * 0.8;
+    const startY = arena.clientHeight - 105;
+    const endX = enemy.offsetLeft + enemy.offsetWidth * 0.2;
+
+    projectile.className = "projectile";
+
+    if (type === "grenade") projectile.classList.add("grenade");
+    if (type === "heavy") projectile.classList.add("heavy");
+
+    projectile.style.display = "block";
+    projectile.style.left = `${startX}px`;
+    projectile.style.top = `${startY}px`;
+
+    player.classList.remove("attack");
+    void player.offsetWidth;
+    player.classList.add("attack");
+
+    const duration =
+        type === "heavy" ? 650 : type === "grenade" ? 480 : 300;
+    const start = performance.now();
+
+    function step(now) {
+        if (finished || token !== actionToken) {
+            projectile.style.display = "none";
             return;
         }
-        if(combo>=2){
-            combo=0;setWeapon("grenade");renderBars();
-            $("feedback").textContent=`연속 2정답! GRENADE 발사 · 적 체력 2칸 감소. ${item.explain}`;
-            $("nextButton").disabled=true;animateShot("grenade",token);
-        }else{
-            setWeapon("rifle");renderBars();
-            $("feedback").textContent=`정답입니다. PULSE RIFLE 발사 · 적 체력 1칸 감소. ${item.explain}`;
-            $("nextButton").disabled=true;animateShot("rifle",token);
+
+        const progress = Math.min((now - start) / duration, 1);
+
+        const curve =
+            type === "grenade"
+                ? Math.sin(progress * Math.PI) * -65
+                : type === "heavy"
+                    ? Math.sin(progress * Math.PI) * -25
+                    : 0;
+
+        projectile.style.left =
+            `${startX + (endX - startX) * progress}px`;
+        projectile.style.top = `${startY + curve}px`;
+
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            projectile.style.display = "none";
+
+            if (type === "heavy" || type === "grenade") {
+                showBlast(endX, startY, type, token);
+            } else {
+                hitEnemy(1);
+                finishAnswerAction();
+            }
         }
-    }else{
-        wrongTotal++;combo=0;perfectRun=false;playerHP=Math.max(0,playerHP-1);
-        buttons[selected].classList.add("wrong");buttons[item.correct].classList.add("correct");
-        setWeapon("rifle");renderBars();$("player").classList.add("hit");
-        later(()=>$("player").classList.remove("hit"),250);
-        $("feedback").textContent=`오답입니다. 플레이어 HP -1, 콤보 초기화. ${item.explain}`;
-        if(playerHP<=0){$("nextButton").disabled=true;later(()=>endGame(false),300);return;}
-        locked=false;
-        $("nextButton").disabled=false;
+    }
+
+    requestAnimationFrame(step);
+}
+
+function showBlast(x, y, type, token) {
+    if (finished || token !== actionToken) return;
+
+    const blast = $("blast");
+
+    blast.style.left = `${x - 10}px`;
+    blast.style.top = `${y - 10}px`;
+    blast.style.display = "block";
+
+    blast.animate(
+        [
+            { transform: "scale(.2)", opacity: 1 },
+            { transform: "scale(3.8)", opacity: .95 },
+            { transform: "scale(6)", opacity: 0 }
+        ],
+        {
+            duration: type === "heavy" ? 900 : 650,
+            easing: "ease-out"
+        }
+    );
+
+    if (type === "heavy") {
+        $("feedback").textContent =
+            "HEAVY BOMB IMPACT! 완벽한 작전 수행.";
+    }
+
+    later(() => {
+        if (finished || token !== actionToken) return;
+
+        blast.style.display = "none";
+
+        if (type === "heavy") {
+            enemyHP = 0;
+            renderBars();
+            endGame(true);
+        } else {
+            hitEnemy(2);
+            finishAnswerAction();
+        }
+    }, type === "heavy" ? 650 : 420);
+}
+
+function hitEnemy(damage) {
+    if (finished) return;
+
+    $("enemy").classList.add("hit");
+    later(() => $("enemy").classList.remove("hit"), 220);
+
+    enemyHP = Math.max(0, enemyHP - damage);
+    renderBars();
+
+    if (enemyHP <= 0) {
+        endGame(true);
     }
 }
-function endGame(victory){
-    if(finished)return;
-    finished=true;locked=true;actionToken++;clearTimers();
+
+function finishAnswerAction() {
+    if (finished) return;
+
+    locked = false;
+    $("nextButton").disabled = false;
+}
+
+function submitAnswer(selected) {
+    if (locked || finished) return;
+
+    locked = true;
+
+    const token = ++actionToken;
+    const item = questions[questionIndex];
+    const buttons = [...$("answers").querySelectorAll("button")];
+
+    buttons.forEach(button => button.disabled = true);
+
+    if (selected === item.correct) {
+        correctTotal++;
+        combo++;
+
+        buttons[selected].classList.add("correct");
+
+        if (
+            questionIndex === 9 &&
+            correctTotal === 10 &&
+            wrongTotal === 0 &&
+            perfectRun
+        ) {
+            combo = 0;
+            setWeapon("heavy");
+            renderBars();
+
+            $("feedback").textContent =
+                `PERFECT CLEAR! 대형 폭탄을 발동합니다. ${item.explain}`;
+
+            $("nextButton").disabled = true;
+
+            later(() => {
+                if (!finished && token === actionToken) {
+                    animateShot("heavy", token);
+                }
+            }, 350);
+
+            return;
+        }
+
+        if (combo >= 2) {
+            combo = 0;
+            setWeapon("grenade");
+            renderBars();
+
+            $("feedback").textContent =
+                `연속 2정답! GRENADE 발사 · 적 체력 2칸 감소. ${item.explain}`;
+
+            $("nextButton").disabled = true;
+            animateShot("grenade", token);
+        } else {
+            setWeapon("rifle");
+            renderBars();
+
+            $("feedback").textContent =
+                `정답입니다. PULSE RIFLE 발사 · 적 체력 1칸 감소. ${item.explain}`;
+
+            $("nextButton").disabled = true;
+            animateShot("rifle", token);
+        }
+    } else {
+        wrongTotal++;
+        combo = 0;
+        perfectRun = false;
+        playerHP = Math.max(0, playerHP - 1);
+
+        buttons[selected].classList.add("wrong");
+        buttons[item.correct].classList.add("correct");
+
+        setWeapon("rifle");
+        renderBars();
+
+        $("player").classList.add("hit");
+        later(() => $("player").classList.remove("hit"), 250);
+
+        $("feedback").textContent =
+            `오답입니다. 플레이어 HP -1, 콤보 초기화. ${item.explain}`;
+
+        if (playerHP <= 0) {
+            $("nextButton").disabled = true;
+            later(() => endGame(false), 300);
+            return;
+        }
+
+        locked = false;
+        $("nextButton").disabled = false;
+    }
+}
+
+function endGame(victory) {
+    if (finished) return;
+
+    finished = true;
+    locked = true;
+    actionToken++;
+    clearTimers();
+
     $("overlay").classList.add("show");
-    $("resultTitle").textContent=victory?"MISSION COMPLETE":"MISSION FAILED";
-    $("resultTitle").className="result-title "+(victory?"win":"fail");
-    $("resultDesc").innerHTML=victory
-        ?`BLACK VEIL의 적을 제압했습니다.<br>정답: ${correctTotal} / 오답: ${wrongTotal}<br>임무를 성공적으로 완료했습니다.`
-        :`플레이어의 체력이 모두 소진되었습니다.<br>정답: ${correctTotal} / 오답: ${wrongTotal}<br>재정비 후 다시 작전을 시작하십시오.`;
-    $("nextButton").disabled=true;$("projectile").style.display="none";$("blast").style.display="none";
-    [...$("answers").querySelectorAll("button")].forEach(button=>button.disabled=true);
-}
-function restartGame(){
-    actionToken++;clearTimers();
-    questionIndex=0;playerHP=4;enemyHP=10;combo=0;correctTotal=0;wrongTotal=0;
-    locked=false;finished=false;perfectRun=true;questions=shuffle(questionBank);
-    $("overlay").classList.remove("show");$("projectile").style.display="none";$("blast").style.display="none";
-    $("player").classList.remove("hit","attack");$("enemy").classList.remove("hit","attack");
-    setWeapon("rifle");renderBars();loadQuestion();
+
+    $("resultKicker").textContent = victory
+        ? "CELL VISION // FINAL MISSION REPORT"
+        : "CELL VISION // OPERATION FAILURE REPORT";
+
+    $("resultTitle").textContent = victory
+        ? "MISSION COMPLETE"
+        : "MISSION FAILED";
+
+    $("resultTitle").className =
+        "result-title " + (victory ? "win" : "fail");
+
+    $("resultStatus").textContent = victory
+        ? "HOSTILE FORCE NEUTRALIZED"
+        : "MISSION STATUS / FAILED";
+
+    $("resultStatus").style.color =
+        victory ? "#7bc9ff" : "#ff6a79";
+
+    $("resultDesc").innerHTML = victory
+        ? `BLACK VEIL의 적대 세력이 괴멸되었습니다.<br>
+           세포 교란 계획이 차단되었으며, 생물학적 위협이 제거되었습니다.<br>
+           확보한 생물학적 정보를 바탕으로 임무 목표를 완수했습니다.<br><br>
+           정답: ${correctTotal} / 오답: ${wrongTotal}<br>
+           <strong style="color:#7bc9ff;letter-spacing:1px;">
+           ALL OBJECTIVES COMPLETE
+           </strong><br><br>
+           <span style="color:#c9d8e7;">
+           작전 성공. 모든 대원은 기지로 복귀하십시오.
+           </span>`
+        : `작전 수행 중 대원의 체력이 모두 소진되었습니다.<br>
+           정답: ${correctTotal} / 오답: ${wrongTotal}<br>
+           임무에 실패했습니다. 재정비 후 다시 작전을 시작하십시오.`;
+
+    $("retryButton").style.display =
+        victory ? "none" : "inline-block";
+
+    $("returnButton").style.display =
+        victory ? "inline-block" : "none";
+
+    $("nextButton").disabled = true;
+    $("projectile").style.display = "none";
+    $("blast").style.display = "none";
+
+    [...$("answers").querySelectorAll("button")].forEach(
+        button => button.disabled = true
+    );
 }
 
-/*
- * components.html 내부에서 부모 페이지를 직접 변경하는 동작은
- * Streamlit iframe의 보안 제한으로 실패할 수 있습니다.
- * 본부 복귀는 iframe 바깥의 Streamlit 기본 페이지 링크를 사용합니다.
- * 아래 함수는 혹시 내부 버튼에서 호출되더라도 최선의 이동을 시도합니다.
- */
-function returnToBase(){
-    const baseUrl = new URL("/", window.location.href).href;
-    try {
-        window.open(baseUrl, "_top");
-    } catch (error) {
-        window.location.href = baseUrl;
-    }
+function restartGame() {
+    actionToken++;
+    clearTimers();
+
+    questionIndex = 0;
+    playerHP = 4;
+    enemyHP = 10;
+    combo = 0;
+    correctTotal = 0;
+    wrongTotal = 0;
+    locked = false;
+    finished = false;
+    perfectRun = true;
+    questions = shuffle(questionBank);
+
+    $("overlay").classList.remove("show");
+    $("projectile").style.display = "none";
+    $("blast").style.display = "none";
+
+    $("player").classList.remove("hit", "attack");
+    $("enemy").classList.remove("hit", "attack");
+
+    $("retryButton").style.display = "inline-block";
+    $("returnButton").style.display = "none";
+
+    setWeapon("rifle");
+    renderBars();
+    loadQuestion();
 }
 
-$("nextButton").addEventListener("click",()=>{
-    if(finished||$("nextButton").disabled)return;
+$("nextButton").addEventListener("click", () => {
+    if (finished || $("nextButton").disabled) return;
+
     questionIndex++;
-    if(questionIndex>=questions.length)questions=questions.concat(shuffle(questionBank));
+
+    if (questionIndex >= questions.length) {
+        questions = questions.concat(shuffle(questionBank));
+    }
+
     loadQuestion();
 });
-$("retryButton").addEventListener("click",restartGame);
+
+$("retryButton").addEventListener("click", restartGame);
+
+/*
+ * components.html은 iframe 내부에서 실행됩니다.
+ * 기지 복귀는 iframe 안에서 부모 페이지를 직접 조작하지 않고,
+ * 상위 프레임의 앱 경로로 이동을 요청합니다.
+ */
+$("returnButton").addEventListener("click", () => {
+    window.open(new URL("/", window.location.href).href, "_top");
+});
 
 restartGame();
 </script>
