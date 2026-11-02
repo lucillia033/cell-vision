@@ -499,6 +499,59 @@ st.markdown(
         letter-spacing: 0.2px;
     }
 
+    /* 사이드바 작전 돌입 구역 */
+    .sidebar-operation-panel {
+        background: linear-gradient(145deg, #102b3b, #091722);
+        border: 1px solid #3a7188;
+        border-top: 2px solid #57d9e8;
+        padding: 12px 10px;
+        margin: 18px 0 14px 0;
+    }
+
+    .sidebar-operation-code {
+        color: #57d9e8;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 9px;
+        letter-spacing: 1.3px;
+        margin-bottom: 7px;
+    }
+
+    .sidebar-operation-title {
+        color: #edf8fc;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .sidebar-operation-description {
+        color: #a9c1ce;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .st-key-sidebar_launch_operation button {
+        min-height: 52px !important;
+        padding: 12px 8px !important;
+        background: linear-gradient(100deg, #12435a, #0b2637) !important;
+        border: 1px solid #57d9e8 !important;
+        border-radius: 0 !important;
+        color: #f0fcff !important;
+        font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px !important;
+        box-shadow: 0 0 14px rgba(87, 217, 232, 0.08);
+    }
+
+    .st-key-sidebar_launch_operation button:hover {
+        background: linear-gradient(100deg, #1a6079, #104057) !important;
+        border-color: #a0f3ff !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 18px rgba(87, 217, 232, 0.2);
+    }
+
     @media (max-width: 800px) {
         .top-strip {
             flex-wrap: wrap;
@@ -578,9 +631,24 @@ with st.sidebar:
     game_page = ROOT_DIR / "pages" / "10_작전.py"
 
     if game_page.exists():
-        st.page_link(
-            "pages/10_작전.py",
-            label="BIO-10 / 작전",
+        st.markdown(
+            """
+            <div class="sidebar-operation-panel">
+                <div class="sidebar-operation-code">BIO-10 // FINAL OPERATION</div>
+                <div class="sidebar-operation-title">작전 돌입</div>
+                <div class="sidebar-operation-description">
+                    소기관 정보를 충분히 수집하고 세포의 작동 원리를 이해했다면,
+                    이제 최종 임무를 수행하십시오.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.button(
+            "INITIATE OPERATION  /  작전 개시",
+            key="sidebar_launch_operation",
+            use_container_width=True,
+            on_click=lambda: st.switch_page("pages/10_작전.py"),
         )
 
     st.markdown(
