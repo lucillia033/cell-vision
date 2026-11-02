@@ -463,14 +463,14 @@ st.markdown(
 
     /* Streamlit에서 key="launch_operation"으로 지정한 버튼만 확대 */
     .st-key-launch_operation button {
-        min-height: 68px !important;
-        padding: 16px 24px !important;
+        min-height: 74px !important;
+        padding: 18px 26px !important;
         background: linear-gradient(100deg, #12435a, #0b2637) !important;
         border: 2px solid #57d9e8 !important;
         border-radius: 0 !important;
         color: #f0fcff !important;
         font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace !important;
-        font-size: 16px !important;
+        font-size: 17px !important;
         font-weight: 700 !important;
         letter-spacing: 1.5px !important;
         box-shadow: 0 0 18px rgba(87, 217, 232, 0.08);
@@ -487,6 +487,16 @@ st.markdown(
 
     .st-key-launch_operation button:active {
         transform: translateY(0);
+    }
+
+    .operation-launch-hint {
+        color: #79c9d8;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 12px;
+        line-height: 1.7;
+        text-align: center;
+        margin-top: 9px;
+        letter-spacing: 0.2px;
     }
 
     @media (max-width: 800px) {
@@ -866,8 +876,7 @@ st.markdown(
             CELL VISION // FINAL OPERATION AUTHORIZATION
         </div>
         <div class="operation-launch-title">
-            정보를 충분히 수집했다면,<br>
-            이제 작전에 돌입하십시오.
+            FINAL OPERATION AUTHORIZATION
         </div>
         <div class="operation-launch-description">
             대원, 분석실에서 확보한 생물학적 정보를 다시 확인하십시오.
@@ -894,6 +903,12 @@ if game_page.exists():
         type="primary",
         use_container_width=True,
         on_click=lambda: st.switch_page("pages/10_작전.py"),
+    )
+    st.markdown(
+        '<div class="operation-launch-hint">'
+        '정보를 충분히 수집했다면, 이제 작전에 돌입하십시오.'
+        '</div>',
+        unsafe_allow_html=True,
     )
 else:
     st.error(
