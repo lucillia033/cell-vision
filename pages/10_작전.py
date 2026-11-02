@@ -1,9 +1,8 @@
-
 import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
-    page_title="Cell Vision - Operation Cell Shield",
+    page_title="Cell Vision - Operation Cell Vision",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -61,7 +60,7 @@ with title_col:
         </div>
         <div style="color:#F0F5FA;font-size:30px;font-weight:800;
                     letter-spacing:2px;margin-top:4px;">
-            OPERATION CELL SHIELD
+            OPERATION CELL VISION
         </div>
         <div style="color:#8598AD;font-size:13px;margin-top:5px;
                     margin-bottom:16px;">
@@ -209,7 +208,7 @@ button{font-family:inherit}
 
 <div class="topbar">
 <div>
-<div class="kicker">CELL VISION / OPERATION CELL SHIELD</div>
+<div class="kicker">CELL VISION / OPERATION CELL VISION</div>
 <div class="heading">BLACK VEIL INTERCEPTION</div>
 <div class="sub">BIOLOGICAL THREAT ELIMINATION</div>
 </div>
@@ -301,7 +300,7 @@ button{font-family:inherit}
 <div class="result-desc" id="resultDesc"></div>
 <div class="result-actions">
 <button class="retry" id="retryButton">RETRY MISSION</button>
-<button class="retry return-base" id="returnButton" style="display:none;">
+<button class="retry return-base" id="returnButton">
 RETURN TO BASE
 </button>
 </div>
@@ -347,6 +346,7 @@ function later(callback, delay) {
         timers = timers.filter(t => t !== timer);
         callback();
     }, delay);
+
     timers.push(timer);
 }
 
@@ -659,6 +659,61 @@ function submitAnswer(selected) {
     }
 }
 
+/*
+ * 부모 Streamlit 페이지의 실제 메인 페이지 링크를 찾아 이동합니다.
+ * 배포 주소의 루트 URL로 이동하는 방식은 사용하지 않습니다.
+ */
+function returnToBase() {
+    try {
+        const parentDocument = window.parent.document;
+
+        const links = Array.from(
+            parentDocument.querySelectorAll(
+                '[data-testid="stPageLink"] a, ' +
+                'a[data-testid="stPageLink-NavLink"]'
+            )
+        );
+
+        const baseLink = links.find(link =>
+            (link.innerText || link.textContent || "")
+                .trim()
+                .includes("EXIT TO BASE")
+        );
+
+        if (baseLink) {
+            baseLink.click();
+            return;
+        }
+
+        // 일부 Streamlit 버전에서는 링크의 DOM 구조가 다를 수 있습니다.
+        const fallbackLinks = Array.from(
+            parentDocument.querySelectorAll("a")
+        );
+
+        const fallbackLink = fallbackLinks.find(link =>
+            (link.innerText || link.textContent || "")
+                .trim() === "EXIT TO BASE"
+        );
+
+        if (fallbackLink) {
+            fallbackLink.click();
+            return;
+        }
+
+        $("resultDesc").innerHTML +=
+            '<br><br><span style="color:#ffb4a2;">' +
+            '복귀 링크를 찾지 못했습니다. 화면 상단의 ' +
+            'EXIT TO BASE 버튼을 이용하십시오.' +
+            '</span>';
+    } catch (error) {
+        $("resultDesc").innerHTML +=
+            '<br><br><span style="color:#ffb4a2;">' +
+            '자동 복귀가 제한되었습니다. 화면 상단의 ' +
+            'EXIT TO BASE 버튼을 이용하십시오.' +
+            '</span>';
+    }
+}
+
 function endGame(victory) {
     if (finished) return;
 
@@ -688,7 +743,7 @@ function endGame(victory) {
         victory ? "#7bc9ff" : "#ff6a79";
 
     $("resultDesc").innerHTML = victory
-        ? `BLACK VEIL의 적대 세력이 괴멸되었습니다.<br>
+        ? `BLACK VEIL의 적대 세력이 무력화되었습니다.<br>
            세포 교란 계획이 차단되었으며, 생물학적 위협이 제거되었습니다.<br>
            확보한 생물학적 정보를 바탕으로 임무 목표를 완수했습니다.<br><br>
            정답: ${correctTotal} / 오답: ${wrongTotal}<br>
@@ -702,11 +757,11 @@ function endGame(victory) {
            정답: ${correctTotal} / 오답: ${wrongTotal}<br>
            임무에 실패했습니다. 재정비 후 다시 작전을 시작하십시오.`;
 
+    // 성공·실패 화면 모두 복귀 버튼을 제공합니다.
     $("retryButton").style.display =
         victory ? "none" : "inline-block";
 
-    $("returnButton").style.display =
-        victory ? "inline-block" : "none";
+    $("returnButton").style.display = "inline-block";
 
     $("nextButton").disabled = true;
     $("projectile").style.display = "none";
@@ -740,7 +795,7 @@ function restartGame() {
     $("enemy").classList.remove("hit", "attack");
 
     $("retryButton").style.display = "inline-block";
-    $("returnButton").style.display = "none";
+    $("returnButton").style.display = "inline-block";
 
     setWeapon("rifle");
     renderBars();
@@ -760,15 +815,7 @@ $("nextButton").addEventListener("click", () => {
 });
 
 $("retryButton").addEventListener("click", restartGame);
-
-/*
- * components.html은 iframe 내부에서 실행됩니다.
- * 기지 복귀는 iframe 안에서 부모 페이지를 직접 조작하지 않고,
- * 상위 프레임의 앱 경로로 이동을 요청합니다.
- */
-$("returnButton").addEventListener("click", () => {
-    window.open(new URL("/", window.location.href).href, "_top");
-});
+$("returnButton").addEventListener("click", returnToBase);
 
 restartGame();
 </script>
