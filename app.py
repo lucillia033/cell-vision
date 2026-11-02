@@ -1,4 +1,4 @@
-
+```python
 import streamlit as st
 from pathlib import Path
 from datetime import datetime
@@ -414,6 +414,81 @@ st.markdown(
         border-color: #203b4b;
     }
 
+    /* 작전 돌입 전용 구역 */
+    .operation-launch-panel {
+        background:
+            linear-gradient(110deg, rgba(21, 54, 72, 0.75), rgba(6, 16, 25, 0.97) 72%),
+            #07111a;
+        border: 1px solid #3a7188;
+        border-top: 3px solid #57d9e8;
+        padding: 25px 28px;
+        margin-top: 18px;
+        margin-bottom: 14px;
+        position: relative;
+    }
+
+    .operation-launch-kicker {
+        color: #57d9e8;
+        font-size: 10px;
+        letter-spacing: 2.2px;
+        margin-bottom: 10px;
+    }
+
+    .operation-launch-title {
+        color: #edf8fc;
+        font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace;
+        font-size: clamp(20px, 2.5vw, 30px);
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        line-height: 1.4;
+        margin-bottom: 12px;
+    }
+
+    .operation-launch-description {
+        color: #a9c1ce;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 13px;
+        line-height: 1.9;
+        max-width: 850px;
+    }
+
+    .operation-launch-warning {
+        color: #79c9d8;
+        font-size: 10px;
+        letter-spacing: 1.3px;
+        margin-top: 15px;
+        padding-top: 12px;
+        border-top: 1px solid #294958;
+    }
+
+    /* Streamlit에서 key="launch_operation"으로 지정한 버튼만 확대 */
+    .st-key-launch_operation button {
+        min-height: 68px !important;
+        padding: 16px 24px !important;
+        background: linear-gradient(100deg, #12435a, #0b2637) !important;
+        border: 2px solid #57d9e8 !important;
+        border-radius: 0 !important;
+        color: #f0fcff !important;
+        font-family: 'IBM Plex Mono', 'Noto Sans KR', monospace !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        letter-spacing: 1.5px !important;
+        box-shadow: 0 0 18px rgba(87, 217, 232, 0.08);
+        transition: all 0.18s ease-in-out;
+    }
+
+    .st-key-launch_operation button:hover {
+        background: linear-gradient(100deg, #1a6079, #104057) !important;
+        border-color: #a0f3ff !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 22px rgba(87, 217, 232, 0.22);
+        transform: translateY(-1px);
+    }
+
+    .st-key-launch_operation button:active {
+        transform: translateY(0);
+    }
+
     @media (max-width: 800px) {
         .top-strip {
             flex-wrap: wrap;
@@ -425,6 +500,19 @@ st.markdown(
 
         .panel {
             min-height: auto;
+        }
+
+        .operation-launch-panel {
+            padding: 20px 16px;
+        }
+
+        .operation-launch-title {
+            font-size: 21px;
+        }
+
+        .st-key-launch_operation button {
+            font-size: 13px !important;
+            letter-spacing: 0.8px !important;
         }
     }
     </style>
@@ -763,7 +851,58 @@ for title, description in protocols:
     )
 
 # =========================================================
-# 11. 하단 정보
+# 11. 작전 돌입 구역
+# =========================================================
+
+st.markdown(
+    '<div class="section-bar">FINAL DIRECTIVE // OPERATION LAUNCH</div>',
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="operation-launch-panel">
+        <div class="operation-launch-kicker">
+            CELL VISION // FINAL OPERATION AUTHORIZATION
+        </div>
+        <div class="operation-launch-title">
+            정보를 충분히 수집했다면,<br>
+            이제 작전에 돌입하십시오.
+        </div>
+        <div class="operation-launch-description">
+            대원, 분석실에서 확보한 생물학적 정보를 다시 확인하십시오.
+            각 소기관의 기능과 세포 내부의 작동 원리를 이해했다면
+            최종 작전을 개시할 준비가 완료된 것입니다.<br>
+            지금까지 습득한 지식을 활용해 주어진 임무를 수행하십시오.
+        </div>
+        <div class="operation-launch-warning">
+            MISSION STATUS: STANDING BY
+            &nbsp; / &nbsp;
+            AUTHORIZATION REQUIRED
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+game_page = ROOT_DIR / "pages" / "10_작전.py"
+
+if game_page.exists():
+    st.button(
+        "INITIATE OPERATION  /  작전 돌입",
+        key="launch_operation",
+        type="primary",
+        use_container_width=True,
+        on_click=lambda: st.switch_page("pages/10_작전.py"),
+    )
+else:
+    st.error(
+        "작전 페이지를 찾을 수 없습니다. "
+        "pages/10_작전.py 파일이 존재하는지 확인해 주세요."
+    )
+
+# =========================================================
+# 12. 하단 정보
 # =========================================================
 
 st.markdown(
@@ -776,3 +915,4 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+```
