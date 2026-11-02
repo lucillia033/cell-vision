@@ -17,8 +17,17 @@ ROOT_DIR = Path(__file__).resolve().parent
 IMAGE_DIR = ROOT_DIR / "images"
 
 # =========================================================
-# 2. 소기관 정보
-# 이미지 파일은 모두 PNG 형식
+# 2. 첫 접속 작전 브리핑 연결
+# =========================================================
+
+if "briefing_completed" not in st.session_state:
+    st.session_state.briefing_completed = False
+
+if not st.session_state.briefing_completed:
+    st.switch_page("pages/0_작전브리핑.py")
+
+# =========================================================
+# 3. 소기관 정보
 # =========================================================
 
 ORGANELLES = [
@@ -88,7 +97,7 @@ ORGANELLES = [
 ]
 
 # =========================================================
-# 3. 전술 분석실 디자인
+# 4. 공통 디자인
 # =========================================================
 
 st.markdown(
@@ -135,7 +144,6 @@ st.markdown(
         color: #c9dce5;
     }
 
-    /* 위쪽 Streamlit 기본 페이지 이동 메뉴만 숨김 */
     [data-testid="stSidebarNav"] {
         display: none !important;
     }
@@ -425,7 +433,7 @@ st.markdown(
 )
 
 # =========================================================
-# 4. 사이드바: 작전 메뉴
+# 5. 사이드바: 직접 만든 작전 메뉴
 # =========================================================
 
 with st.sidebar:
@@ -444,14 +452,18 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    st.markdown("**COMMAND CENTER**")
-    st.caption("현재 화면 · 작전 지휘 통제실")
-
-    # 메인 화면으로 이동하는 app 버튼 추가
     st.page_link(
         "app.py",
-        label="app",
+        label="COMMAND CENTER / 메인 화면",
     )
+
+    briefing_page = ROOT_DIR / "pages" / "0_작전브리핑.py"
+
+    if briefing_page.exists():
+        st.page_link(
+            "pages/0_작전브리핑.py",
+            label="MISSION BRIEFING / 작전 브리핑",
+        )
 
     st.markdown(
         '<div class="side-section">02 / INTELLIGENCE FILES</div>',
@@ -464,6 +476,14 @@ with st.sidebar:
                 organelle["page"],
                 label=f'{organelle["code"]} / {organelle["name"]}',
             )
+
+    game_page = ROOT_DIR / "pages" / "10_작전.py"
+
+    if game_page.exists():
+        st.page_link(
+            "pages/10_작전.py",
+            label="BIO-10 / 작전",
+        )
 
     st.markdown(
         """
@@ -482,7 +502,7 @@ with st.sidebar:
     st.caption("CELL VISION / INTERNAL USE")
 
 # =========================================================
-# 5. 상단 전술 시스템 바
+# 6. 상단 전술 시스템 바
 # =========================================================
 
 current_time = datetime.now().strftime("%Y-%m-%d")
@@ -511,7 +531,7 @@ st.markdown(
 )
 
 # =========================================================
-# 6. 상황 정보 패널
+# 7. 상황 정보 패널
 # =========================================================
 
 status_col1, status_col2, status_col3 = st.columns(3)
@@ -553,7 +573,7 @@ with status_col3:
     )
 
 # =========================================================
-# 7. 중앙 분석 화면
+# 8. 중앙 분석 화면
 # =========================================================
 
 st.markdown(
@@ -576,12 +596,7 @@ with left_col:
                 세포의 주요 구조를 식별하고 각 소기관의 기능 및 상호작용을 분석하십시오.
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
-    st.markdown(
-        """
         <div class="section-bar">PRIMARY OBJECTIVES</div>
         <div class="data-row"><span>OBJECTIVE 01</span><span>구조 식별</span></div>
         <div class="data-row"><span>OBJECTIVE 02</span><span>기능 분석</span></div>
@@ -648,7 +663,7 @@ with right_col:
     )
 
 # =========================================================
-# 8. 소기관 정보 파일
+# 9. 소기관 정보 파일
 # =========================================================
 
 st.markdown(
@@ -674,9 +689,13 @@ for start in range(0, len(ORGANELLES), 3):
             st.markdown(
                 f"""
                 <div class="intel-card">
-                    <div class="intel-code">{organelle["code"]} // INTELLIGENCE FILE</div>
+                    <div class="intel-code">
+                        {organelle["code"]} // INTELLIGENCE FILE
+                    </div>
                     <div class="intel-name">{organelle["name"]}</div>
-                    <div class="intel-description">{organelle["description"]}</div>
+                    <div class="intel-description">
+                        {organelle["description"]}
+                    </div>
                     <div class="intel-status">● DATA FILE / BIOLOGICAL</div>
                 </div>
                 """,
@@ -701,6 +720,7 @@ for start in range(0, len(ORGANELLES), 3):
                 st.page_link(
                     organelle["page"],
                     label=f'ACCESS FILE / {organelle["name"]}',
+                    use_container_width=True,
                 )
             else:
                 st.caption(
@@ -708,7 +728,7 @@ for start in range(0, len(ORGANELLES), 3):
                 )
 
 # =========================================================
-# 9. 작전 지침
+# 10. 작전 지침
 # =========================================================
 
 st.markdown(
@@ -741,6 +761,10 @@ for title, description in protocols:
         """,
         unsafe_allow_html=True,
     )
+
+# =========================================================
+# 11. 하단 정보
+# =========================================================
 
 st.markdown(
     """
