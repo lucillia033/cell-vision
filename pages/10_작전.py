@@ -148,7 +148,7 @@ button{font-family:inherit}
 @keyframes recoil{0%{translate:0 0}40%{translate:-7px 0}100%{translate:0 0}}
 .projectile{position:absolute;z-index:7;display:none;width:28px;height:4px;border-radius:4px;background:#80d5ff;box-shadow:0 0 13px 4px #318dff;pointer-events:none}
 .projectile.grenade{width:14px;height:14px;border:1px solid #ffd09a;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff0bf,#ff9b55 45%,#a64029);box-shadow:0 0 20px 8px #ff5c3588}
-.projectile.heavy{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#fff,#ffb65a 45%,#fa4856);box-shadow:0 0 25px 12px #ff653c99}
+.projectile.heavy{width:26px;height:26px;border:2px solid #ffd6a0;border-radius:38%;background:radial-gradient(circle at 30% 25%,#fff8d8,#ffb65a 42%,#fa4856 78%);box-shadow:0 0 25px 12px #ff653c99}
 .blast{position:absolute;z-index:8;display:none;width:24px;height:24px;border-radius:50%;background:#ffd7a1;box-shadow:0 0 25px 18px #ff603b,0 0 65px 35px #ffb34d88;pointer-events:none}
 .bottom{position:relative;z-index:4;display:grid;grid-template-columns:190px minmax(0,1fr);gap:13px;padding:13px}
 .player-panel{padding:13px;border:1px solid #2a4056;background:#101b28}
@@ -383,7 +383,7 @@ function setWeapon(type) {
         model.classList.add("heavy-mode");
         $("heavySlot").classList.add("heavy-active");
         $("weaponHint").textContent =
-            "HEAVY BOMB 발동 · 완벽 작전";
+            "HEAVY BOMB 투척 준비 · 완벽 작전";
     } else {
         $("rifleSlot").classList.add("active");
         $("weaponHint").textContent = "PULSE RIFLE 장착 중";
@@ -467,7 +467,7 @@ function animateShot(type, token) {
     player.classList.add("attack");
 
     const duration =
-        type === "heavy" ? 650 : type === "grenade" ? 480 : 300;
+        type === "heavy" ? 850 : type === "grenade" ? 480 : 300;
     const start = performance.now();
 
     function step(now) {
@@ -482,7 +482,7 @@ function animateShot(type, token) {
             type === "grenade"
                 ? Math.sin(progress * Math.PI) * -65
                 : type === "heavy"
-                    ? Math.sin(progress * Math.PI) * -25
+                    ? Math.sin(progress * Math.PI) * -105
                     : 0;
 
         projectile.style.left =
@@ -587,8 +587,8 @@ function submitAnswer(selected) {
         buttons[selected].classList.add("correct");
 
         if (
-            questionIndex === 9 &&
-            correctTotal === 10 &&
+            questionIndex === questions.length - 1 &&
+            correctTotal === questions.length &&
             wrongTotal === 0 &&
             perfectRun
         ) {
@@ -597,7 +597,7 @@ function submitAnswer(selected) {
             renderBars();
 
             $("feedback").textContent =
-                `PERFECT CLEAR! 대형 폭탄을 발동합니다. ${item.explain}`;
+                `PERFECT CLEAR! 마지막 무기 HEAVY BOMB 투척! ${item.explain}`;
 
             $("nextButton").disabled = true;
 
@@ -785,7 +785,7 @@ function restartGame() {
     locked = false;
     finished = false;
     perfectRun = true;
-    questions = shuffle(questionBank);
+    questions = shuffle(questionBank).slice(0, 10);
 
     $("overlay").classList.remove("show");
     $("projectile").style.display = "none";
