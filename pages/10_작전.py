@@ -300,11 +300,11 @@ button{font-family:inherit}
 /* 수류탄 위쪽의 안전장치 부분을 표현합니다. */
 .weapon-model.grenade-mode:after{content:"";position:absolute;top:-1px;left:12px;width:7px;height:5px;border:1px solid #f8d4a8;background:#e7a66a}
 
-/* 중폭탄의 몸체와 붉은색 폭발 효과를 표현합니다. */
+/* 세 번째 무기인 폭탄의 몸체와 붉은색 표시를 표현합니다. */
 .weapon-model.heavy-mode:before{content:"";position:absolute;inset:3px;border:2px solid #ffb4a2;border-radius:35%;background:radial-gradient(circle at 30% 25%,#fff1c9,#ff795a 50%,#812536);box-shadow:0 0 15px #ff593c}
 
-/* 중폭탄 가운데에 H 표시를 추가합니다. */
-.weapon-model.heavy-mode:after{content:"H";position:absolute;top:9px;left:13px;color:white;font-size:12px;font-weight:900}
+/* 폭탄 가운데에 B 표시를 추가합니다. */
+.weapon-model.heavy-mode:after{content:"B";position:absolute;top:9px;left:11px;color:white;font-size:12px;font-weight:900}
 
 /* 적 캐릭터가 들고 있는 무기의 위치를 설정합니다. */
 .enemy .weapon-model{left:-7px}
@@ -336,7 +336,7 @@ button{font-family:inherit}
 /* 수류탄 발사체의 모양을 설정합니다. */
 .projectile.grenade{width:14px;height:14px;border:1px solid #ffd09a;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff0bf,#ff9b55 45%,#a64029);box-shadow:0 0 20px 8px #ff5c3588}
 
-/* 중폭탄 발사체의 모양을 설정합니다. */
+/* 세 번째 무기인 폭탄 발사체의 모양을 설정합니다. */
 .projectile.heavy{width:26px;height:26px;border:2px solid #ffd6a0;border-radius:38%;background:radial-gradient(circle at 30% 25%,#fff8d8,#ffb65a 42%,#fa4856 78%);box-shadow:0 0 25px 12px #ff653c99}
 
 /* 폭발 효과를 표현하는 원형 요소의 기본 디자인입니다. */
@@ -644,7 +644,7 @@ button{font-family:inherit}
 </div>
 
 <div>
-<div class="small-label">COMBO <span id="comboCount">0</span> / 2</div>
+<div class="small-label">COMBO <span id="comboCount">0</span> / 3</div>
 <!-- 연속 정답 횟수를 표시합니다. -->
 
 <div class="energy-track"><div class="energy-fill" id="energyFill"></div></div>
@@ -663,7 +663,7 @@ button{font-family:inherit}
 <div class="weapon" id="grenadeSlot">2 — GRENADE / 2 COMBO</div>
 <!-- 연속 2정답 시 사용하는 수류탄입니다. -->
 
-<div class="weapon" id="heavySlot">3 — HEAVY BOMB / PERFECT</div>
+<div class="weapon" id="heavySlot">3 — AIRSTRIKE BOMB / 3 COMBO</div>
 <!-- 모든 문제를 맞혔을 때 사용하는 마지막 무기입니다. -->
 
 <div class="weapon-hint" id="weaponHint">PULSE RIFLE 장착 중</div>
@@ -700,7 +700,7 @@ button{font-family:inherit}
 <!-- 다음 문제로 이동하는 버튼입니다. 처음에는 비활성화되어 있습니다. -->
 </div>
 
-<div class="status" id="status">연속 2정답: 수류탄 공격 / 체력 소진: 임무 실패</div>
+<div class="status" id="status">연속 2정답: 수류탄 공격 / 연속 3정답: 폭탄 투하 / 체력 소진: 임무 실패</div>
 <!-- 게임 진행 규칙을 안내합니다. -->
 </div>
 </div>
@@ -935,7 +935,7 @@ function setWeapon(type) {
 
         // 중폭탄에 대한 설명을 표시합니다.
         $("weaponHint").textContent =
-            "HEAVY BOMB 투척 준비 · 완벽 작전";
+            "AIRSTRIKE BOMB 투하 준비 · 연속 3정답";
 
     // 수류탄이나 중폭탄이 아니라면 기본 무기를 사용합니다.
     } else {
@@ -1000,7 +1000,7 @@ function renderBars() {
 
     // 콤보 횟수에 따라 게이지의 너비를 변경합니다.
     // 콤보가 1이면 50%, 2이면 100%입니다.
-    $("energyFill").style.width = `${combo * 50}%`;
+    $("energyFill").style.width = `${combo * 100 / 3}%`;
 
     // 지금까지 맞힌 문제와 틀린 문제의 개수를 표시합니다.
     $("accuracy").textContent =
@@ -1079,10 +1079,12 @@ function animateShot(type, token) {
     const enemy = $("enemy");
 
     // 플레이어 위치를 기준으로 발사 시작 지점을 계산합니다.
-    const startX = player.offsetLeft + player.offsetWidth * 0.8;
+    const startX = type === "heavy"
+        ? enemy.offsetLeft + enemy.offsetWidth * 0.35
+        : player.offsetLeft + player.offsetWidth * 0.8;
 
-    // 전투 공간 아래쪽에서 발사가 시작되도록 세로 위치를 계산합니다.
-    const startY = arena.clientHeight - 105;
+    // 폭탄은 전투 공간 상단에서 떨어지고, 다른 무기는 아래쪽에서 발사됩니다.
+    const startY = type === "heavy" ? 0 : arena.clientHeight - 105;
 
     // 적 캐릭터의 위치를 기준으로 도착 지점을 계산합니다.
     const endX = enemy.offsetLeft + enemy.offsetWidth * 0.2;
@@ -1138,16 +1140,16 @@ function animateShot(type, token) {
         const curve =
             type === "grenade"
                 ? Math.sin(progress * Math.PI) * -65
-                : type === "heavy"
-                    ? Math.sin(progress * Math.PI) * -105
-                    : 0;
+                : 0;
 
         // 시작 지점에서 도착 지점까지 발사체의 가로 위치를 이동시킵니다.
         projectile.style.left =
             `${startX + (endX - startX) * progress}px`;
 
         // 포물선 이동 높이를 반영하여 세로 위치를 변경합니다.
-        projectile.style.top = `${startY + curve}px`;
+        projectile.style.top = type === "heavy"
+            ? `${startY + (arena.clientHeight - 115) * progress}px`
+            : `${startY + curve}px`;
 
         // 아직 애니메이션이 끝나지 않았다면 다음 화면 프레임에서 다시 실행합니다.
         if (progress < 1) {
@@ -1161,7 +1163,7 @@ function animateShot(type, token) {
 
             // 중폭탄이나 수류탄이면 폭발 효과를 실행합니다.
             if (type === "heavy" || type === "grenade") {
-                showBlast(endX, startY, type, token);
+                showBlast(endX, type === "heavy" ? arena.clientHeight - 115 : startY, type, token);
 
             // 기본 총이라면 적에게 체력 1의 피해를 주고 다음 문제로 넘어갈 준비를 합니다.
             } else {
@@ -1217,7 +1219,7 @@ function showBlast(x, y, type, token) {
     // 중폭탄 공격이라면 완벽한 작전 수행 메시지를 표시합니다.
     if (type === "heavy") {
         $("feedback").textContent =
-            "HEAVY BOMB IMPACT! 완벽한 작전 수행.";
+            "AIRSTRIKE BOMB IMPACT! 폭탄 투하 완료.";
     }
 
     // 일정 시간이 지난 후 폭발 효과를 종료하고 피해를 적용합니다.
@@ -1229,11 +1231,10 @@ function showBlast(x, y, type, token) {
         // 폭발 효과를 화면에서 숨깁니다.
         blast.style.display = "none";
 
-        // 중폭탄이라면 적의 체력을 0으로 만들어 게임을 승리로 종료합니다.
+        // 세 번째 무기인 폭탄은 적에게 체력 3의 피해를 줍니다.
         if (type === "heavy") {
-            enemyHP = 0;
-            renderBars();
-            endGame(true);
+            hitEnemy(3);
+            finishAnswerAction();
 
         // 수류탄이라면 적에게 체력 2의 피해를 줍니다.
         } else {
@@ -1333,50 +1334,33 @@ function submitAnswer(selected) {
         buttons[selected].classList.add("correct");
 
 
-        // 마지막 문제까지 전부 맞혔는지 확인하는 조건입니다.
-        if (
-            questionIndex === questions.length - 1 &&  // 현재 문제가 마지막 문제인지 확인합니다.
-            correctTotal === questions.length &&       // 전체 문제를 모두 맞혔는지 확인합니다.
-            wrongTotal === 0 &&                        // 틀린 문제가 하나도 없는지 확인합니다.
-            perfectRun                                 // 완벽한 작전 상태가 유지되었는지 확인합니다.
-        ) {
+        // 세 번째 연속 정답이면 폭탄 투하 공격을 실행합니다.
+        if (combo >= 3) {
 
-            // 마지막 공격을 준비하면서 콤보를 초기화합니다.
+            // 폭탄 공격 후 콤보를 0으로 초기화합니다.
             combo = 0;
 
-            // 세 번째 무기인 중폭탄을 장착합니다.
+            // 세 번째 무기인 폭탄을 장착합니다.
             setWeapon("heavy");
-
-            // 변경된 무기와 게임 상태를 화면에 반영합니다.
             renderBars();
 
-            // 완벽하게 모든 문제를 맞혔다는 메시지와 마지막 문제 해설을 표시합니다.
             $("feedback").textContent =
-                `PERFECT CLEAR! 마지막 무기 HEAVY BOMB 투척! ${item.explain}`;
-
-            // 마지막 공격이 실행되는 동안 다음 문제 버튼을 비활성화합니다.
+                `3연속 정답! AIRSTRIKE BOMB 투하 · 적 체력 3칸 감소. ${item.explain}`;
             $("nextButton").disabled = true;
 
-            // 350ms가 지나면 중폭탄 발사 애니메이션을 실행합니다.
+            // 잠시 뒤 폭탄이 상공에서 떨어지는 애니메이션을 실행합니다.
             later(() => {
-
-                // 게임이 끝나지 않았고 공격 번호가 그대로라면 실행합니다.
                 if (!finished && token === actionToken) {
                     animateShot("heavy", token);
                 }
-
             }, 350);
 
-            // 아래의 일반 공격 코드를 실행하지 않고 함수를 종료합니다.
             return;
         }
 
 
-        // 연속 정답 횟수가 2회 이상이라면 수류탄 공격을 실행합니다.
-        if (combo >= 2) {
-
-            // 수류탄을 발사한 뒤 콤보를 다시 0으로 초기화합니다.
-            combo = 0;
+        // 두 번째 연속 정답이면 수류탄 공격을 실행합니다.
+        if (combo === 2) {
 
             // 두 번째 무기인 수류탄을 장착합니다.
             setWeapon("grenade");
