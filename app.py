@@ -126,7 +126,7 @@ st.markdown(
     """
     <style>
     /* 웹페이지에서 사용할 외부 글꼴을 가져옵니다. */
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
 
     /* CSS 전체에서 반복해서 사용할 색상을 변수로 지정합니다. */
     :root {
@@ -305,18 +305,21 @@ st.markdown(
     /* 기밀 정보 안내 문구입니다. */
     .intelligence-notice-text {
         color: #c9dce5;
-        font-family: 'Noto Sans KR', sans-serif;
-        font-size: 13px;
-        line-height: 1.8;
+        font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif;
+        font-size: clamp(17px, 1.45vw, 22px);
+        font-weight: 400;
+        line-height: 1.7;
+        letter-spacing: 0.2px;
     }
 
-    /* 작전 수행 지시를 청록색으로 강조합니다. */
+    /* 작전 수행 지시는 더 큰 지휘센터 스타일 글꼴로 강조합니다. */
     .intelligence-notice-directive {
         color: var(--cyan);
-        font-family: 'Noto Sans KR', sans-serif;
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1.8;
+        font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif;
+        font-size: clamp(23px, 2vw, 32px);
+        font-weight: 400;
+        line-height: 1.55;
+        letter-spacing: 0.3px;
     }
 
     /* 시스템이 정상 작동 중임을 나타내는 표시입니다. */
