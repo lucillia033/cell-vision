@@ -289,6 +289,36 @@ st.markdown(
         line-height: 1.6;
     }
 
+    /* SYSTEM INTELLIGENCE 구역에 표시하는 작전 안내 패널입니다. */
+    .intelligence-notice {
+        background: linear-gradient(145deg, #0c1b28, #07111a);
+        border: 1px solid #284655;
+        border-top: 2px solid #5d8b9e;
+        padding: 22px 16px;
+        min-height: 240px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 14px;
+    }
+
+    /* 기밀 정보 안내 문구입니다. */
+    .intelligence-notice-text {
+        color: #c9dce5;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    /* 작전 수행 지시를 청록색으로 강조합니다. */
+    .intelligence-notice-directive {
+        color: var(--cyan);
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.8;
+    }
+
     /* 시스템이 정상 작동 중임을 나타내는 표시입니다. */
     .status-dot {
         color: var(--green);
@@ -945,20 +975,13 @@ with right_col:
     st.markdown(
         """
         <div class="section-bar">SYSTEM INTELLIGENCE</div>
-        <div class="panel">
-            <div class="panel-label">ANALYSIS MODE</div>
-            <div class="panel-value">BIO / SCAN</div>
-            <div class="panel-note">STRUCTURAL RECONNAISSANCE</div>
-        </div>
-        <div class="panel">
-            <div class="panel-label">DATA CLASSIFICATION</div>
-            <div class="panel-value">BIO-RESTRICTED</div>
-            <div class="panel-note">EDUCATIONAL INTELLIGENCE FILES</div>
-        </div>
-        <div class="panel">
-            <div class="panel-label">ANALYSIS PROTOCOL</div>
-            <div class="panel-value">CELL SYSTEM</div>
-            <div class="panel-note">IDENTIFY / ANALYZE / UNDERSTAND</div>
+        <div class="intelligence-notice">
+            <div class="intelligence-notice-text">
+                아래 파일들은 우리 요원들이 공수한 기밀 정보들 입니다.
+            </div>
+            <div class="intelligence-notice-directive">
+                정보를 수집 후 작전을 수행하십시오.
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
