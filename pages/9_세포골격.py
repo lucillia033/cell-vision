@@ -2,10 +2,14 @@
 import streamlit as st
 from pathlib import Path
 
+# 페이지 제목과 화면 레이아웃, 사이드바의 초기 상태를 설정합니다.
 st.set_page_config(page_title="CELL VISION | Cytoskeleton", layout="wide", initial_sidebar_state="expanded")
+
+# 현재 파일의 위치를 기준으로 프로젝트 최상위 폴더와 이미지 경로를 설정합니다.
 ROOT_DIR = Path(__file__).resolve().parent.parent
 IMAGE_PATH = ROOT_DIR / "images" / "cytoskeleton.png"
 
+# 페이지 전체에 적용할 글꼴, 배경색, 글자색, 버튼 및 각 영역의 디자인을 설정합니다.
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
@@ -36,35 +40,60 @@ h1 {font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px}
 .article-section p,.article-section li {color:#c6d7e0}
 .info-label {font-family:'IBM Plex Mono',monospace;color:#57d9e8;font-size:10px;letter-spacing:1px}
 </style>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)  # CSS 스타일을 HTML로 화면에 적용합니다.
 
+# 왼쪽 사이드바에 프로젝트 이름, 페이지 이동 링크, 시스템 상태 정보를 표시합니다.
 with st.sidebar:
+    # 사이드바 상단에 프로젝트 이름과 메뉴 제목을 표시합니다.
     st.markdown("""<div class="side-brand"><div class="side-brand-title">CELL VISION</div><div class="side-brand-sub">BIOLOGICAL OPERATIONS UNIT</div></div><div class="side-section">01 / COMMAND MENU</div>""", unsafe_allow_html=True)
     st.markdown("**COMMAND CENTER**")
     st.caption("현재 화면 · 작전 지휘 통제실")
+
+    # 메인 화면으로 이동할 수 있는 링크를 만듭니다.
     st.page_link("app.py", label="메인 화면")
+
+    # 각 세포소기관 페이지의 이름과 파일 경로를 목록으로 정리합니다.
     st.markdown('<div class="side-section">02 / INTELLIGENCE FILES</div>', unsafe_allow_html=True)
     pages = [("BIO-01 / 핵","pages/1_핵.py"),("BIO-02 / 리보솜","pages/2_리보솜.py"),("BIO-03 / 미토콘드리아","pages/3_미토콘드리아.py"),("BIO-04 / 소포체","pages/4_소포체.py"),("BIO-05 / 골지체","pages/5_골지체.py"),("BIO-06 / 리소좀","pages/6_리소좀.py"),("BIO-07 / 세포막","pages/7_세포막.py"),("BIO-08 / 세포질","pages/8_세포질.py"),("BIO-09 / 세포골격","pages/9_세포골격.py")]
+
+    # 목록에 있는 페이지를 하나씩 꺼내 사이드바에 이동 링크로 표시합니다.
     for label, path in pages:
         st.page_link(path, label=label)
+
+    # 시스템 상태와 데이터베이스, 보안 등급 정보를 사이드바 하단에 표시합니다.
     st.markdown("""<div class="side-section">03 / SYSTEM MONITOR</div><div class="side-info">SYSTEM STATUS · ONLINE<br>DATABASE · LOCAL FILES<br>SECURITY LEVEL · BIO-RESTRICTED<br>ACCESS MODE · EDUCATIONAL</div><br><hr><div class="side-info">CELL VISION / INTERNAL USE</div>""", unsafe_allow_html=True)
 
+# 페이지 상단에 시스템 상태와 현재 자료의 번호를 표시합니다.
 st.markdown("""<div class="top-strip"><span>SYSTEM / CELLULAR INTELLIGENCE</span><span>STATUS / ONLINE</span><span>FILE / BIO-09</span></div><div class="eyebrow">TACTICAL BIOLOGY INTERFACE // INTELLIGENCE FILE</div>""", unsafe_allow_html=True)
+
+# 세포골격 페이지의 제목과 간단한 설명을 표시합니다.
 st.title("세포골격 | CYTOSKELETON")
 st.caption("BIO-09 · 세포 형태 유지와 세포 내부 수송 및 운동")
+
+# 버튼을 누르면 메인 화면으로 이동합니다.
 if st.button("← 메인 화면으로 돌아가기"):
     st.switch_page("app.py")
+
+# 구분선을 표시해 상단 영역과 본문을 나눕니다.
 st.divider()
 
+# 화면을 왼쪽과 오른쪽 두 영역으로 나눕니다.
 left, right = st.columns([1, 1.6], gap="large")
+
+# 왼쪽 영역에는 세포골격 이미지를 표시합니다.
 with left:
+    # 이미지 파일이 존재하면 화면에 표시하고, 없으면 경고 메시지를 보여줍니다.
     if IMAGE_PATH.exists():
         st.image(str(IMAGE_PATH), use_container_width=True)
     else:
         st.warning("이미지를 찾을 수 없습니다: images/cytoskeleton.png")
+
+# 오른쪽 영역에는 세포골격의 핵심 정보를 요약해 표시합니다.
 with right:
     st.markdown("""<div class="overview"><div class="info-label">CORE INTELLIGENCE</div>세포골격은 세포 내부에 그물처럼 분포하는 단백질 섬유 구조이다. 세포의 형태를 유지하고 세포소기관의 위치를 지지하며, 세포 내부의 물질 수송과 세포 분열 및 운동에 관여한다.</div>""", unsafe_allow_html=True)
 
+# 세포골격의 구조와 기능, 작동 원리, 다른 세포 구성 요소와의 관계를 설명합니다.
+# HTML로 작성된 각 제목과 문단은 위에서 설정한 CSS 디자인을 적용받습니다.
 st.markdown("""
 <div class="article-section">
 <h2>01 / STRUCTURE ANALYSIS · 구조</h2>
@@ -101,4 +130,4 @@ st.markdown("""
 <h3>미토콘드리아</h3>
 <p>미토콘드리아가 생산하는 ATP는 운동 단백질의 활동과 세포골격의 재구성 등 에너지가 필요한 세포 과정에 이용된다.</p>
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)  # HTML 문서의 내용을 화면에 표시합니다.
