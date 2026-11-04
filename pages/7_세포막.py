@@ -1,11 +1,18 @@
 
 import streamlit as st
-from pathlib import Path
+from pathlib import Path  # 파일이나 폴더의 위치를 다루는 기능
 
+# 페이지 제목, 화면 너비, 처음 열었을 때 사이드바 상태를 설정합니다.
 st.set_page_config(page_title="CELL VISION | Cell Membrane", layout="wide", initial_sidebar_state="expanded")
+
+# 현재 파일이 있는 폴더를 기준으로 프로젝트의 가장 바깥 폴더 위치를 찾습니다.
 ROOT_DIR = Path(__file__).resolve().parent.parent
+
+# 세포막 이미지 파일이 저장된 위치를 지정합니다.
 IMAGE_PATH = ROOT_DIR / "images" / "membrane.png"
 
+# 화면의 배경색, 글자색, 글꼴, 버튼 모양 등을 설정합니다.
+# CSS는 웹 화면의 디자인을 꾸밀 때 사용하는 코드입니다.
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
@@ -36,35 +43,61 @@ h1 {font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px}
 .article-section p,.article-section li {color:#c6d7e0}
 .info-label {font-family:'IBM Plex Mono',monospace;color:#57d9e8;font-size:10px;letter-spacing:1px}
 </style>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)  # 위에서 작성한 HTML과 CSS를 화면에 적용합니다.
 
+# 왼쪽 사이드바에 프로젝트 이름과 페이지 이동 메뉴를 표시합니다.
 with st.sidebar:
+    # 사이드바 맨 위에 프로젝트 이름과 메뉴 제목을 표시합니다.
     st.markdown("""<div class="side-brand"><div class="side-brand-title">CELL VISION</div><div class="side-brand-sub">BIOLOGICAL OPERATIONS UNIT</div></div><div class="side-section">01 / COMMAND MENU</div>""", unsafe_allow_html=True)
     st.markdown("**COMMAND CENTER**")
     st.caption("현재 화면 · 작전 지휘 통제실")
+
+    # 이 링크를 누르면 메인 화면으로 이동합니다.
     st.page_link("app.py", label="메인 화면")
+
+    # 각 세포소기관의 이름과 해당 페이지의 파일 경로를 목록에 저장합니다.
     st.markdown('<div class="side-section">02 / INTELLIGENCE FILES</div>', unsafe_allow_html=True)
     pages = [("BIO-01 / 핵","pages/1_핵.py"),("BIO-02 / 리보솜","pages/2_리보솜.py"),("BIO-03 / 미토콘드리아","pages/3_미토콘드리아.py"),("BIO-04 / 소포체","pages/4_소포체.py"),("BIO-05 / 골지체","pages/5_골지체.py"),("BIO-06 / 리소좀","pages/6_리소좀.py"),("BIO-07 / 세포막","pages/7_세포막.py"),("BIO-08 / 세포질","pages/8_세포질.py"),("BIO-09 / 세포골격","pages/9_세포골격.py")]
+
+    # 목록에 있는 페이지를 하나씩 꺼내 사이드바에 이동 링크로 만듭니다.
     for label, path in pages:
         st.page_link(path, label=label)
+
+    # 시스템 상태와 보안 등급 등의 정보를 사이드바 아래쪽에 표시합니다.
     st.markdown("""<div class="side-section">03 / SYSTEM MONITOR</div><div class="side-info">SYSTEM STATUS · ONLINE<br>DATABASE · LOCAL FILES<br>SECURITY LEVEL · BIO-RESTRICTED<br>ACCESS MODE · EDUCATIONAL</div><br><hr><div class="side-info">CELL VISION / INTERNAL USE</div>""", unsafe_allow_html=True)
 
+# 페이지 맨 위에 시스템 상태와 현재 자료 번호를 표시합니다.
 st.markdown("""<div class="top-strip"><span>SYSTEM / CELLULAR INTELLIGENCE</span><span>STATUS / ONLINE</span><span>FILE / BIO-07</span></div><div class="eyebrow">TACTICAL BIOLOGY INTERFACE // INTELLIGENCE FILE</div>""", unsafe_allow_html=True)
+
+# 페이지 제목과 세포막에 대한 간단한 설명을 표시합니다.
 st.title("세포막 | CELL MEMBRANE")
 st.caption("BIO-07 · 세포 내부와 외부의 경계를 형성하고 물질 이동을 조절")
+
+# 버튼을 누르면 메인 화면으로 이동합니다.
 if st.button("← 메인 화면으로 돌아가기"):
     st.switch_page("app.py")
+
+# 제목 영역과 본문 사이에 구분선을 표시합니다.
 st.divider()
 
+# 화면을 왼쪽과 오른쪽으로 나눕니다.
+# 왼쪽에는 세포막 이미지, 오른쪽에는 핵심 설명을 배치합니다.
 left, right = st.columns([1, 1.6], gap="large")
+
 with left:
+    # 이미지 파일이 존재하면 화면에 표시합니다.
     if IMAGE_PATH.exists():
         st.image(str(IMAGE_PATH), use_container_width=True)
     else:
+        # 이미지가 없으면 파일을 찾을 수 없다는 안내를 표시합니다.
         st.warning("이미지를 찾을 수 없습니다: images/membrane.png")
+
 with right:
+    # 세포막의 핵심 역할을 요약한 설명 상자를 표시합니다.
     st.markdown("""<div class="overview"><div class="info-label">CORE INTELLIGENCE</div>세포막은 세포의 안팎을 구분하는 얇은 막이다. 인지질 이중층과 여러 막 단백질을 바탕으로 물질의 출입을 조절하고, 외부 신호를 받아들이며 세포 내부 환경을 유지한다.</div>""", unsafe_allow_html=True)
 
+# 세포막의 구조, 기능, 물질 수송, 다른 세포 구성 요소와의 관계를 설명합니다.
+# 아래 HTML은 화면에 표시되는 학습 내용이므로 기존 문장을 그대로 유지합니다.
 st.markdown("""
 <div class="article-section">
 <h2>01 / STRUCTURE ANALYSIS · 구조</h2>
@@ -103,4 +136,4 @@ st.markdown("""
 <h3>미토콘드리아</h3>
 <p>미토콘드리아가 합성하는 ATP는 세포막의 능동 수송과 같이 에너지가 필요한 과정에 이용된다.</p>
 </div>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True)  # 작성한 HTML 내용을 화면에 표시합니다.
