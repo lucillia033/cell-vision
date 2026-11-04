@@ -56,63 +56,63 @@ ORGANELLES = [
         "code": "BIO-01",
         "image": "nucleus.png",
         "page": "pages/1_핵.py",
-        "description": "유전 정보를 보관하고 세포의 활동을 조절합니다.",
+        "description": "유전 정보를 보관하고 세포의 활동을 조절하라.",
     },
     {
         "name": "리보솜",
         "code": "BIO-02",
         "image": "ribosome.png",
         "page": "pages/2_리보솜.py",
-        "description": "유전 정보에 따라 단백질을 합성합니다.",
+        "description": "유전 정보에 따라 단백질을 합성하라.",
     },
     {
         "name": "미토콘드리아",
         "code": "BIO-03",
         "image": "mitochondria.png",
         "page": "pages/3_미토콘드리아.py",
-        "description": "세포 호흡을 통해 ATP를 생성합니다.",
+        "description": "세포 호흡을 통해 ATP를 생성하라.",
     },
     {
         "name": "소포체",
         "code": "BIO-04",
         "image": "er.png",
         "page": "pages/4_소포체.py",
-        "description": "단백질과 지질의 합성 및 이동에 관여합니다.",
+        "description": "단백질과 지질의 합성 및 이동을 담당하라.",
     },
     {
         "name": "골지체",
         "code": "BIO-05",
         "image": "golgi.png",
         "page": "pages/5_골지체.py",
-        "description": "물질을 가공하고 분류하여 목적지로 보냅니다.",
+        "description": "물질을 가공하고 분류해 목적지로 보내라.",
     },
     {
         "name": "리소좀",
         "code": "BIO-06",
         "image": "lysosome.png",
         "page": "pages/6_리소좀.py",
-        "description": "세포 내 물질과 노폐물을 분해합니다.",
+        "description": "세포 내 물질과 노폐물을 분해하라.",
     },
     {
         "name": "세포막",
         "code": "BIO-07",
         "image": "membrane.png",
         "page": "pages/7_세포막.py",
-        "description": "세포 안팎의 물질 이동을 조절합니다.",
+        "description": "세포 안팎의 물질 이동을 조절하라.",
     },
     {
         "name": "세포질",
         "code": "BIO-08",
         "image": "cytosol.png",
         "page": "pages/8_세포질.py",
-        "description": "다양한 세포 소기관이 존재하고 여러 화학 반응이 일어나는 공간입니다.",
+        "description": "다양한 세포 소기관과 화학 반응이 일어나는 공간을 확인하라.",
     },
     {
         "name": "세포골격",
         "code": "BIO-09",
         "image": "cytoskeleton.png",
         "page": "pages/9_세포골격.py",
-        "description": "세포의 형태를 유지하고 세포 내 물질 이동을 돕습니다.",
+        "description": "세포의 형태를 유지하고 세포 내 물질 이동을 도와라.",
     },
 ]
 
@@ -774,8 +774,8 @@ with st.sidebar:
                 <div class="sidebar-operation-code">BIO-10 // FINAL OPERATION</div>
                 <div class="sidebar-operation-title">작전 돌입</div>
                 <div class="sidebar-operation-description">
-                    소기관 정보를 충분히 수집하고 세포의 작동 원리를 이해했다면,
-                    이제 최종 임무를 수행하십시오.
+                    소기관 정보를 충분히 수집하고 세포의 작동 원리를 이해한 뒤,
+                    최종 임무를 수행하라.
                 </div>
             </div>
             """,
@@ -923,7 +923,7 @@ with left_col:
         )
     else:
         st.warning(
-            "세포 전체 이미지가 없습니다. images 폴더에 cell.png 파일이 있는지 확인해 주세요."
+            "세포 전체 이미지가 없습니다. images 폴더에 cell.png 파일이 있는지 확인하라."
         )
 
     # 기존 세포 분석 지시문은 유지합니다.
@@ -932,9 +932,9 @@ with left_col:
         <div class="mission-box">
             <div class="mission-box-title">COMMAND DIRECTIVE // 001</div>
             <div class="mission-box-text">
-                세포는 여러 소기관이 유기적으로 협력하는 생명 시스템입니다.
+                세포는 여러 소기관이 유기적으로 협력하는 생명 시스템이다.
                 각 소기관의 구조와 기능을 확인하고, 물질 합성·수송·에너지 전환 과정이
-                어떻게 연결되는지 분석하십시오.
+                어떻게 연결되는지 분석하라.
             </div>
         </div>
         """,
@@ -949,7 +949,7 @@ with right_col:
             <div class="panel-label">MISSION DIRECTIVE</div>
             <div class="panel-value">CELL / 001</div>
             <div class="panel-note">
-                세포의 주요 구조를 식별하고 각 소기관의 기능 및 상호작용을 분석하십시오.
+                세포의 주요 구조를 식별하고 각 소기관의 기능과 상호작용을 분석하라.
             </div>
         </div>
 
@@ -962,10 +962,10 @@ with right_col:
         <div class="section-bar" style="margin-top: 18px;">SYSTEM INTELLIGENCE</div>
         <div class="intelligence-notice">
             <div class="intelligence-notice-text">
-                아래 파일들은 우리 요원들이 공수한 기밀 정보들 입니다.
+                아래 파일들은 우리 요원들이 공수한 기밀 정보다. 숙지하라.
             </div>
             <div class="intelligence-notice-directive">
-                정보를 수집 후 작전을 수행하십시오.
+                정보를 수집한 뒤 작전을 수행하라.
             </div>
         </div>
         """,
@@ -980,7 +980,7 @@ with right_col:
 st.markdown(
     """
     <div class="section-bar" style="font-size: 15px;">
-        다음은 우리가 확보한 기밀 자료이다. 전체를 다 숙지한 후 작전에 돌입하기를 바란다.
+        확보한 기밀 자료를 전부 숙지하고 작전에 돌입하라.
     </div>
     """,
     unsafe_allow_html=True,
@@ -1050,7 +1050,7 @@ for start in range(0, len(ORGANELLES), 3):
 
                 # 이미지가 없으면 어떤 파일을 찾지 못했는지 안내합니다.
                 st.warning(
-                    f'이미지 파일을 찾을 수 없습니다: images/{organelle["image"]}'
+                    f'이미지 파일을 찾을 수 없다: images/{organelle["image"]}'
                 )
 
             # 현재 소기관의 상세 페이지 경로를 만듭니다.
@@ -1070,7 +1070,7 @@ for start in range(0, len(ORGANELLES), 3):
 
                 # 상세 페이지가 없으면 파일 경로를 확인하라는 안내를 표시합니다.
                 st.caption(
-                    f'상세 페이지 파일 확인 필요: {organelle["page"]}'
+                    f'상세 페이지 파일을 확인하라: {organelle["page"]}'
                 )
 
 # =========================================================
@@ -1088,15 +1088,15 @@ st.markdown(
 protocols = [
     (
         "PROTOCOL 01 — OBSERVE",
-        "세포 전체 이미지를 관찰하고 각 소기관의 위치와 형태를 확인하십시오.",
+        "세포 전체 이미지를 관찰하고 각 소기관의 위치와 형태를 확인하라.",
     ),
     (
         "PROTOCOL 02 — IDENTIFY",
-        "소기관 정보 파일에 접근하여 구조, 기능, 세포 내 역할을 분석하십시오.",
+        "소기관 정보 파일에 접근해 구조, 기능, 세포 내 역할을 분석하라.",
     ),
     (
         "PROTOCOL 03 — CONNECT",
-        "단백질 합성 및 이동, 세포 호흡 등 세포 내 과정의 연결 관계를 이해하십시오.",
+        "단백질 합성 및 이동, 세포 호흡 등 세포 내 과정의 연결 관계를 파악하라.",
     ),
 ]
 
@@ -1134,10 +1134,10 @@ st.markdown(
             FINAL OPERATION AUTHORIZATION
         </div>
         <div class="operation-launch-description">
-            대원, 분석실에서 확보한 생물학적 정보를 다시 확인하십시오.
-            각 소기관의 기능과 세포 내부의 작동 원리를 이해했다면
-            최종 작전을 개시할 준비가 완료된 것입니다.<br>
-            지금까지 습득한 지식을 활용해 주어진 임무를 수행하십시오.
+            대원, 분석실에서 확보한 생물학적 정보를 다시 확인하라.
+            각 소기관의 기능과 세포 내부의 작동 원리를 파악하고
+            최종 작전을 개시하라.<br>
+            지금까지 습득한 지식을 활용해 주어진 임무를 완수하라.
         </div>
         <div class="operation-launch-warning">
             MISSION STATUS: STANDING BY
@@ -1167,7 +1167,7 @@ if game_page.exists():
     # 작전 개시 버튼 아래에 안내 문구를 표시합니다.
     st.markdown(
         '<div class="operation-launch-hint">'
-        '정보를 충분히 수집했다면, 이제 작전에 돌입하십시오.'
+        '정보를 충분히 수집했다면 지금 작전에 돌입하라.'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -1176,8 +1176,8 @@ else:
 
     # 작전 페이지 파일이 존재하지 않으면 오류 메시지를 표시합니다.
     st.error(
-        "작전 페이지를 찾을 수 없습니다. "
-        "pages/10_작전.py 파일이 존재하는지 확인해 주세요."
+        "작전 페이지를 찾을 수 없다. "
+        "pages/10_작전.py 파일이 존재하는지 확인하라."
     )
 
 # =========================================================
