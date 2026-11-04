@@ -897,16 +897,49 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 화면을 왼쪽, 중앙, 오른쪽 세 개의 열로 나눕니다.
-# [0.85, 1.8, 1.0]은 각 열의 상대적인 너비 비율입니다.
-# 중앙 열을 가장 넓게 설정해 세포 이미지를 크게 표시합니다.
-left_col, center_col, right_col = st.columns(
-    [0.85, 1.8, 1.0],
-    gap="medium",
-)
+# 화면을 왼쪽과 오른쪽 두 개의 열로 나눕니다.
+# 기존 세포 이미지의 표시 크기를 유지할 수 있도록 두 열의 너비를 비슷하게 설정합니다.
+left_col, right_col = st.columns([1, 1], gap="medium")
 
-# 왼쪽 열에는 임무 지시와 주요 목표를 표시합니다.
+# 왼쪽 열에는 세포 전체 이미지와 기존 분석 지시를 표시합니다.
 with left_col:
+    st.markdown(
+        '<div class="section-bar">TARGET IMAGE // CELLULAR OVERVIEW</div>',
+        unsafe_allow_html=True,
+    )
+
+    # images 폴더 안에 있는 cell.png 파일의 경로를 만듭니다.
+    cell_image = IMAGE_DIR / "cell.png"
+
+    # 이미지 파일이 실제로 존재하는지 확인합니다.
+    if cell_image.exists():
+        st.image(
+            str(cell_image),
+            use_container_width=True,
+            caption="TARGET 001 / ANIMAL CELL STRUCTURE",
+        )
+    else:
+        st.warning(
+            "세포 전체 이미지가 없습니다. images 폴더에 cell.png 파일이 있는지 확인해 주세요."
+        )
+
+    # 기존 세포 분석 지시문은 유지합니다.
+    st.markdown(
+        """
+        <div class="mission-box">
+            <div class="mission-box-title">COMMAND DIRECTIVE // 001</div>
+            <div class="mission-box-text">
+                세포는 여러 소기관이 유기적으로 협력하는 생명 시스템입니다.
+                각 소기관의 구조와 기능을 확인하고, 물질 합성·수송·에너지 전환 과정이
+                어떻게 연결되는지 분석하십시오.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+# 오른쪽 열에는 기존 임무 지시와 주요 목표, 시스템 안내 패널을 세로로 배치합니다.
+with right_col:
     st.markdown(
         """
         <div class="panel">
@@ -922,59 +955,8 @@ with left_col:
         <div class="data-row"><span>OBJECTIVE 02</span><span>기능 분석</span></div>
         <div class="data-row"><span>OBJECTIVE 03</span><span>물질 이동</span></div>
         <div class="data-row"><span>OBJECTIVE 04</span><span>시스템 이해</span></div>
-        """,
-        unsafe_allow_html=True,
-    )
 
-# 중앙 열에는 세포 전체 이미지와 분석 지시를 표시합니다.
-with center_col:
-
-    # 중앙 이미지 영역의 제목을 표시합니다.
-    st.markdown(
-        '<div class="section-bar">TARGET IMAGE // CELLULAR OVERVIEW</div>',
-        unsafe_allow_html=True,
-    )
-
-    # images 폴더 안에 있는 cell.png 파일의 경로를 만듭니다.
-    cell_image = IMAGE_DIR / "cell.png"
-
-    # 이미지 파일이 실제로 존재하는지 확인합니다.
-    if cell_image.exists():
-
-        # 이미지가 존재하면 화면 너비에 맞춰 표시하고 설명을 추가합니다.
-        st.image(
-            str(cell_image),
-            use_container_width=True,
-            caption="TARGET 001 / ANIMAL CELL STRUCTURE",
-        )
-
-    else:
-
-        # 이미지가 없으면 사용자에게 파일 확인 안내를 표시합니다.
-        st.warning(
-            "세포 전체 이미지가 없습니다. images 폴더에 cell.png 파일이 있는지 확인해 주세요."
-        )
-
-    # 세포의 구조와 기능을 분석하라는 지휘 내용을 표시합니다.
-    st.markdown(
-        """
-        <div class="mission-box">
-            <div class="mission-box-title">COMMAND DIRECTIVE // 001</div>
-            <div class="mission-box-text">
-                세포는 여러 소기관이 유기적으로 협력하는 생명 시스템입니다.
-                각 소기관의 구조와 기능을 확인하고, 물질 합성·수송·에너지 전환 과정이
-                어떻게 연결되는지 분석하십시오.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-# 오른쪽 열에는 분석 모드와 자료 분류 등 시스템 정보를 표시합니다.
-with right_col:
-    st.markdown(
-        """
-        <div class="section-bar">SYSTEM INTELLIGENCE</div>
+        <div class="section-bar" style="margin-top: 18px;">SYSTEM INTELLIGENCE</div>
         <div class="intelligence-notice">
             <div class="intelligence-notice-text">
                 아래 파일들은 우리 요원들이 공수한 기밀 정보들 입니다.
