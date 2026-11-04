@@ -74,15 +74,15 @@ with title_col:
     st.markdown(
         """
         <div style="color:#8ABCE8;font-size:12px;letter-spacing:3px;">
-            CELL VISION / BIOLOGICAL OPERATIONS UNIT
+            셀 비전 / 생물학 작전 부대
         </div>
         <div style="color:#F0F5FA;font-size:30px;font-weight:800;
                     letter-spacing:2px;margin-top:4px;">
-            OPERATION CELL VISION
+            셀 비전 작전
         </div>
         <div style="color:#8598AD;font-size:13px;margin-top:5px;
                     margin-bottom:16px;">
-            BLACK VEIL INTERCEPTION PROTOCOL
+            블랙 베일 차단 작전 절차
         </div>
         """,
         unsafe_allow_html=True,
@@ -92,7 +92,7 @@ with title_col:
 # 두 번째 열에 메인 화면으로 돌아가는 버튼을 배치합니다.
 with exit_col:
     st.write("")  # 버튼 위쪽에 빈 공간을 추가합니다.
-    st.page_link("app.py", label="EXIT TO BASE")
+    st.page_link("app.py", label="기지로 복귀")
     # app.py에 해당하는 메인 페이지로 이동하는 링크를 생성합니다.
 
 
@@ -176,7 +176,7 @@ button{font-family:inherit}
 .machine:before{content:"";position:absolute;left:50%;top:12px;width:80px;height:150px;transform:translateX(-50%);border:3px solid #69baf2;border-radius:50%;box-shadow:0 0 20px #4ba9ff66,inset 0 0 20px #4ba9ff44}
 
 /* 코어 아래쪽에 이름을 표시합니다. */
-.machine:after{content:"BIOLOGICAL CORE";position:absolute;bottom:12px;left:0;right:0;color:#8bc8f2;text-align:center;font-size:9px;letter-spacing:2px}
+.machine:after{content:"생물학적 핵심부";position:absolute;bottom:12px;left:0;right:0;color:#8bc8f2;text-align:center;font-size:9px;letter-spacing:2px}
 
 /* 전투 공간의 바닥을 디자인합니다. */
 .floor{position:absolute;z-index:1;bottom:0;left:0;right:0;height:45px;border-top:2px solid #476580;background:linear-gradient(180deg,#1c2b3b,#070b11)}
@@ -523,20 +523,20 @@ button{font-family:inherit}
 <!-- 게임 상단의 제목과 적 체력 정보를 담는 영역입니다. -->
 
 <div>
-<div class="kicker">CELL VISION / OPERATION CELL VISION</div>
+<div class="kicker">CELL VISION / 셀 비전 작전</div>
 <!-- 프로젝트의 이름을 표시합니다. -->
 
-<div class="heading">BLACK VEIL INTERCEPTION</div>
+<div class="heading">블랙 베일 차단 작전</div>
 <!-- 게임의 주요 작전 이름을 표시합니다. -->
 
-<div class="sub">BIOLOGICAL THREAT ELIMINATION</div>
+<div class="sub">생물학적 위협 제거</div>
 <!-- 작전의 부제목을 표시합니다. -->
 </div>
 
 <div class="enemy-hud">
 <!-- 적의 체력 정보를 표시하는 영역입니다. -->
 
-<div class="hud-label"><span>ENEMY INTEGRITY</span><span id="enemyCount">10 / 10</span></div>
+<div class="hud-label"><span>적 체력</span><span id="enemyCount">10 / 10</span></div>
 <!-- 적의 현재 체력을 숫자로 표시합니다. -->
 
 <div class="bar-track" id="enemyBars"></div>
@@ -550,10 +550,10 @@ button{font-family:inherit}
 <div class="machine"></div>
 <!-- 화면 중앙의 생물학적 코어를 표시합니다. -->
 
-<div class="unit-label player-label">PLAYER / OPERATIVE</div>
+<div class="unit-label player-label">아군 / 작전 요원</div>
 <!-- 플레이어의 이름표입니다. -->
 
-<div class="unit-label enemy-label">BLACK VEIL / ELITE</div>
+<div class="unit-label enemy-label">블랙 베일 / 정예 병력</div>
 <!-- 적의 이름표입니다. -->
 
 <div class="fighter player" id="player">
@@ -632,11 +632,11 @@ button{font-family:inherit}
 <div class="player-panel">
 <!-- 플레이어의 체력, 콤보, 무기 정보를 표시하는 패널입니다. -->
 
-<div class="panel-title">OPERATIVE STATUS</div>
+<div class="panel-title">작전 요원 상태</div>
 <!-- 플레이어 상태 패널의 제목입니다. -->
 
 <div>
-<div class="small-label">PLAYER HP <span id="hpCount">4 / 4</span></div>
+<div class="small-label">아군 체력 <span id="hpCount">4 / 4</span></div>
 <!-- 플레이어의 현재 체력을 숫자로 표시합니다. -->
 
 <div class="hp-track" id="hpBars"></div>
@@ -644,7 +644,7 @@ button{font-family:inherit}
 </div>
 
 <div>
-<div class="small-label">COMBO <span id="comboCount">0</span> / 3</div>
+<div class="small-label">연속 정답 <span id="comboCount">0</span> / 3</div>
 <!-- 연속 정답 횟수를 표시합니다. -->
 
 <div class="energy-track"><div class="energy-fill" id="energyFill"></div></div>
@@ -654,19 +654,19 @@ button{font-family:inherit}
 <div style="grid-column:1/-1">
 <!-- 이 영역이 플레이어 정보 패널의 두 열 전체를 차지하도록 설정합니다. -->
 
-<div class="small-label">EQUIPPED WEAPONS</div>
+<div class="small-label">장착 무기</div>
 <!-- 장착된 무기 목록의 제목입니다. -->
 
-<div class="weapon active" id="rifleSlot">1 — PULSE RIFLE</div>
+<div class="weapon active" id="rifleSlot">1 — 펄스 소총</div>
 <!-- 기본 무기인 펄스 라이플입니다. -->
 
-<div class="weapon" id="grenadeSlot">2 — GRENADE / 2 COMBO</div>
+<div class="weapon" id="grenadeSlot">2 — GRENADE / 2 연속 정답</div>
 <!-- 연속 2정답 시 사용하는 수류탄입니다. -->
 
-<div class="weapon" id="heavySlot">3 — AIRSTRIKE BOMB / 3 COMBO</div>
+<div class="weapon" id="heavySlot">3 — AIRSTRIKE BOMB / 3 연속 정답</div>
 <!-- 모든 문제를 맞혔을 때 사용하는 마지막 무기입니다. -->
 
-<div class="weapon-hint" id="weaponHint">PULSE RIFLE 장착 중</div>
+<div class="weapon-hint" id="weaponHint">펄스 소총 장착 중</div>
 <!-- 현재 장착된 무기에 대한 설명을 표시합니다. -->
 </div>
 </div>
@@ -677,10 +677,10 @@ button{font-family:inherit}
 <div class="question-meta">
 <!-- 문제 번호와 전체 정답·오답 수를 표시합니다. -->
 
-<span id="questionNumber">MISSION QUESTION 01</span>
+<span id="questionNumber">작전 문제 01</span>
 <!-- 현재 문제의 번호를 표시합니다. -->
 
-<span id="accuracy">CORRECT 0 · WRONG 0</span>
+<span id="accuracy">정답 0 · 오답 0</span>
 <!-- 지금까지 맞힌 문제와 틀린 문제의 수를 표시합니다. -->
 </div>
 
@@ -690,17 +690,17 @@ button{font-family:inherit}
 <div class="answers" id="answers"></div>
 <!-- JavaScript가 문제의 선택지 버튼을 생성하는 영역입니다. -->
 
-<div class="feedback" id="feedback">문제를 풀어 작전을 진행하십시오.</div>
+<div class="feedback" id="feedback">문제를 풀고 작전을 진행하십시오.</div>
 <!-- 정답 또는 오답을 선택했을 때 결과와 해설을 표시합니다. -->
 
 <div class="action-row">
 <!-- 다음 문제 버튼을 배치하는 영역입니다. -->
 
-<button class="action" id="nextButton" disabled>NEXT QUESTION</button>
+<button class="action" id="nextButton" disabled>다음 문제로 이동</button>
 <!-- 다음 문제로 이동하는 버튼입니다. 처음에는 비활성화되어 있습니다. -->
 </div>
 
-<div class="status" id="status">연속 2정답: 수류탄 공격 / 연속 3정답: 폭탄 투하 / 체력 소진: 임무 실패</div>
+<div class="status" id="status">연속 2정답 달성 시 수류탄을 발사하십시오. 연속 3정답 달성 시 폭탄을 투하하십시오. 체력이 모두 소진되면 작전에 실패합니다.</div>
 <!-- 게임 진행 규칙을 안내합니다. -->
 </div>
 </div>
@@ -711,13 +711,13 @@ button{font-family:inherit}
 <div class="result-box">
 <!-- 결과 창의 내용을 담는 상자입니다. -->
 
-<div class="result-kicker" id="resultKicker">CELL VISION // MISSION REPORT</div>
+<div class="result-kicker" id="resultKicker">셀 비전 // 작전 보고서</div>
 <!-- 성공 또는 실패 보고서의 종류를 표시합니다. -->
 
-<div class="result-title" id="resultTitle">MISSION FAILED</div>
+<div class="result-title" id="resultTitle">작전 실패</div>
 <!-- 임무 성공 또는 실패 결과를 크게 표시합니다. -->
 
-<div class="result-status" id="resultStatus">MISSION STATUS / FAILED</div>
+<div class="result-status" id="resultStatus">작전 상태 / 실패</div>
 <!-- 임무의 최종 상태를 표시합니다. -->
 
 <div class="result-desc" id="resultDesc"></div>
@@ -726,11 +726,11 @@ button{font-family:inherit}
 <div class="result-actions">
 <!-- 결과 창의 버튼들을 배치하는 영역입니다. -->
 
-<button class="retry" id="retryButton">RETRY MISSION</button>
+<button class="retry" id="retryButton">작전 재시작</button>
 <!-- 실패했을 때 게임을 다시 시작하는 버튼입니다. -->
 
 <button class="retry return-base" id="returnButton">
-RETURN TO BASE
+기지로 복귀
 </button>
 <!-- 게임을 종료하고 메인 화면으로 돌아가는 버튼입니다. -->
 </div>
@@ -922,7 +922,7 @@ function setWeapon(type) {
 
         // 현재 무기에 대한 설명을 변경합니다.
         $("weaponHint").textContent =
-            "GRENADE 장착 · 연속 2정답 공격";
+            "수류탄 장착 · 연속 2정답 공격";
 
     // 선택한 무기가 중폭탄이라면 실행합니다.
     } else if (type === "heavy") {
@@ -935,7 +935,7 @@ function setWeapon(type) {
 
         // 중폭탄에 대한 설명을 표시합니다.
         $("weaponHint").textContent =
-            "AIRSTRIKE BOMB 투하 준비 · 연속 3정답";
+            "공습 폭탄 투하 준비 · 연속 3정답";
 
     // 수류탄이나 중폭탄이 아니라면 기본 무기를 사용합니다.
     } else {
@@ -944,7 +944,7 @@ function setWeapon(type) {
         $("rifleSlot").classList.add("active");
 
         // 기본 무기에 대한 설명을 표시합니다.
-        $("weaponHint").textContent = "PULSE RIFLE 장착 중";
+        $("weaponHint").textContent = "펄스 소총 장착 중";
     }
 }
 
@@ -1004,7 +1004,7 @@ function renderBars() {
 
     // 지금까지 맞힌 문제와 틀린 문제의 개수를 표시합니다.
     $("accuracy").textContent =
-        `CORRECT ${correctTotal} · WRONG ${wrongTotal}`;
+        `정답 ${correctTotal} · 오답 ${wrongTotal}`;
 }
 
 
@@ -1031,7 +1031,7 @@ function loadQuestion() {
     // 현재 문제 번호를 두 자리 숫자로 표시합니다.
     // padStart(2, "0")은 한 자리 숫자 앞에 0을 붙입니다.
     $("questionNumber").textContent =
-        `MISSION QUESTION ${String(questionIndex + 1).padStart(2, "0")}`;
+        `작전 문제 ${String(questionIndex + 1).padStart(2, "0")}`;
 
     // 문제 내용을 화면에 표시합니다.
     $("questionText").textContent = item.q;
@@ -1219,7 +1219,7 @@ function showBlast(x, y, type, token) {
     // 중폭탄 공격이라면 완벽한 작전 수행 메시지를 표시합니다.
     if (type === "heavy") {
         $("feedback").textContent =
-            "AIRSTRIKE BOMB IMPACT! 폭탄 투하 완료.";
+            "공습 폭탄 투하 완료! 적을 타격했습니다.";
     }
 
     // 일정 시간이 지난 후 폭발 효과를 종료하고 피해를 적용합니다.
@@ -1345,7 +1345,7 @@ function submitAnswer(selected) {
             renderBars();
 
             $("feedback").textContent =
-                `3연속 정답! AIRSTRIKE BOMB 투하 · 적 체력 3칸 감소. ${item.explain}`;
+                `3연속 정답 달성! 공습 폭탄을 투하하십시오. 적 체력을 3칸 감소시키십시오. ${item.explain}`;
             $("nextButton").disabled = true;
 
             // 잠시 뒤 폭탄이 상공에서 떨어지는 애니메이션을 실행합니다.
@@ -1370,7 +1370,7 @@ function submitAnswer(selected) {
 
             // 수류탄 공격과 문제 해설을 표시합니다.
             $("feedback").textContent =
-                `연속 2정답! GRENADE 발사 · 적 체력 2칸 감소. ${item.explain}`;
+                `연속 2정답 달성! 수류탄을 발사하십시오. 적 체력을 2칸 감소시키십시오. ${item.explain}`;
 
             // 공격이 끝날 때까지 다음 문제 버튼을 비활성화합니다.
             $("nextButton").disabled = true;
@@ -1389,7 +1389,7 @@ function submitAnswer(selected) {
 
             // 기본 무기 공격 메시지와 해설을 표시합니다.
             $("feedback").textContent =
-                `정답입니다. PULSE RIFLE 발사 · 적 체력 1칸 감소. ${item.explain}`;
+                `정답입니다. 펄스 소총을 발사하십시오. 적 체력을 1칸 감소시키십시오. ${item.explain}`;
 
             // 공격이 끝날 때까지 다음 문제 버튼을 비활성화합니다.
             $("nextButton").disabled = true;
@@ -1435,7 +1435,7 @@ function submitAnswer(selected) {
 
         // 오답 안내와 문제 해설을 표시합니다.
         $("feedback").textContent =
-            `오답입니다. 플레이어 HP -1, 콤보 초기화. ${item.explain}`;
+            `오답입니다. 아군 체력을 1칸 줄이고 연속 정답 횟수를 초기화하십시오. ${item.explain}`;
 
         // 플레이어의 체력이 0 이하라면 임무 실패로 처리합니다.
         if (playerHP <= 0) {
@@ -1485,11 +1485,11 @@ function returnToBase() {
             )
         );
 
-        // 링크 중 EXIT TO BASE라는 글자가 포함된 링크를 찾습니다.
+        // 링크 중 기지로 복귀라는 글자가 포함된 링크를 찾습니다.
         const baseLink = links.find(link =>
             (link.innerText || link.textContent || "")
                 .trim()
-                .includes("EXIT TO BASE")
+                .includes("기지로 복귀")
         );
 
         // 해당 링크를 찾았다면 실행합니다.
@@ -1508,10 +1508,10 @@ function returnToBase() {
             parentDocument.querySelectorAll("a")
         );
 
-        // 링크의 글자가 EXIT TO BASE와 정확히 일치하는 요소를 찾습니다.
+        // 링크의 글자가 기지로 복귀와 정확히 일치하는 요소를 찾습니다.
         const fallbackLink = fallbackLinks.find(link =>
             (link.innerText || link.textContent || "")
-                .trim() === "EXIT TO BASE"
+                .trim() === "기지로 복귀"
         );
 
         // 대체 검색으로 링크를 찾았다면 실행합니다.
@@ -1528,7 +1528,7 @@ function returnToBase() {
         $("resultDesc").innerHTML +=
             '<br><br><span style="color:#ffb4a2;">' +
             '복귀 링크를 찾지 못했습니다. 화면 상단의 ' +
-            'EXIT TO BASE 버튼을 이용하십시오.' +
+            '기지로 복귀 버튼을 이용하십시오.' +
             '</span>';
 
     // try 안의 코드에서 오류가 발생하면 catch 부분을 실행합니다.
@@ -1538,7 +1538,7 @@ function returnToBase() {
         $("resultDesc").innerHTML +=
             '<br><br><span style="color:#ffb4a2;">' +
             '자동 복귀가 제한되었습니다. 화면 상단의 ' +
-            'EXIT TO BASE 버튼을 이용하십시오.' +
+            '기지로 복귀 버튼을 이용하십시오.' +
             '</span>';
     }
 }
@@ -1572,13 +1572,13 @@ function endGame(victory) {
 
     // 성공 여부에 따라 결과 보고서 제목을 변경합니다.
     $("resultKicker").textContent = victory
-        ? "CELL VISION // FINAL MISSION REPORT"
-        : "CELL VISION // OPERATION FAILURE REPORT";
+        ? "셀 비전 // 최종 작전 보고서"
+        : "셀 비전 // 작전 실패 보고서";
 
-    // 성공이면 MISSION COMPLETE, 실패이면 MISSION FAILED를 표시합니다.
+    // 성공이면 작전 완료, 실패이면 작전 실패를 표시합니다.
     $("resultTitle").textContent = victory
-        ? "MISSION COMPLETE"
-        : "MISSION FAILED";
+        ? "작전 완료"
+        : "작전 실패";
 
     // 성공과 실패에 따라 결과 제목의 색상 클래스를 변경합니다.
     $("resultTitle").className =
@@ -1586,8 +1586,8 @@ function endGame(victory) {
 
     // 임무 결과 상태를 표시합니다.
     $("resultStatus").textContent = victory
-        ? "HOSTILE FORCE NEUTRALIZED"
-        : "MISSION STATUS / FAILED";
+        ? "적 병력 무력화 완료"
+        : "작전 상태 / 실패";
 
     // 성공과 실패에 따라 결과 상태 글자의 색상을 변경합니다.
     $("resultStatus").style.color =
@@ -1601,14 +1601,14 @@ function endGame(victory) {
            확보한 생물학적 정보를 바탕으로 임무 목표를 완수했습니다.<br><br>
            정답: ${correctTotal} / 오답: ${wrongTotal}<br>
            <strong style="color:#7bc9ff;letter-spacing:1px;">
-           ALL OBJECTIVES COMPLETE
+           모든 작전 목표를 완수하십시오
            </strong><br><br>
            <span style="color:#c9d8e7;">
            작전 성공. 모든 대원은 기지로 복귀하십시오.
            </span>`
         : `작전 수행 중 대원의 체력이 모두 소진되었습니다.<br>
            정답: ${correctTotal} / 오답: ${wrongTotal}<br>
-           임무에 실패했습니다. 재정비 후 다시 작전을 시작하십시오.`;
+           작전에 실패했습니다. 재정비한 뒤 다시 작전을 시작하십시오.`;
 
     // 성공·실패 화면 모두 복귀 버튼을 제공합니다.
     $("retryButton").style.display =
@@ -1712,7 +1712,7 @@ function restartGame() {
    22. 버튼 이벤트 연결 및 게임 시작
    ========================================================= */
 
-// NEXT QUESTION 버튼을 클릭했을 때 실행되는 이벤트입니다.
+// 다음 문제로 이동 버튼을 클릭했을 때 실행되는 이벤트입니다.
 $("nextButton").addEventListener("click", () => {
 
     // 게임이 끝났거나 버튼이 비활성화되어 있다면 실행하지 않습니다.
